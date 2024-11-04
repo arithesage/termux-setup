@@ -1,0 +1,18 @@
+#!/bin/bash
+
+if [ "$PROOT_DISTRO" == "" ];
+then
+    echo "The environment variable PROOT_DISTRO has not been set."
+    echo "This script needs it to enter a proot distro."
+    echo ""
+    
+    exit 1
+fi
+
+if ! [ "$EXT_SD" == "" ];
+then
+    SD_BINDING="--bind ${EXT_SD}:/mnt/extsd"
+fi
+
+proot-distro login ${PROOT_DISTRO} ${SD_BINDING} --shared-tmp
+

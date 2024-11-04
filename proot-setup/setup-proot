@@ -35,6 +35,24 @@ export PROOT_USER="puser"
 PROOT_PATH="$PREFIX/var/lib/proot-distro/installed-rootfs/${PROOT_DISTRO}"
 
 
+if ! [ -f "$HOME/scripts/padmin" ];
+then
+    mkdir -p "$HOME/scripts"
+
+    cp "$HOME/termux-setup/proot-setup/padmin" "$HOME/scripts/"
+    cp "$HOME/termux-setup/proot-setup/puser" "$HOME/scripts/"
+
+    echo "export PATH=\$PATH:\$HOME/scripts" >> "$HOME/.environment"
+    echo "source \$HOME/.proot_env" >> "$HOME/.environment"
+
+    echo "export PROOT_DISTRO=\"${PROOT_DISTRO}\"" >> "$HOME/.proot_env"
+    echo "export PROOT_USER=\"${PROOT_USER}\"" >> "$HOME/.proot_env"
+    echo "export PROOT_PATH=\"${PROOT_PATH}\"" >> "$HOME/.proot_env"
+
+    export PATH=$PATH:$HOME/scripts
+fi
+
+
 if ! [ -f "${PREFIX}/bin/proot-distro" ];
 then
     echo "Installing proot-distro ..."
@@ -71,8 +89,8 @@ then
     echo "Installing some basic packages..."
     echo "---------------------------------"
 
-    apt update
-    apt install -y dialog gpg man wget
+    padmin apt update
+    padmin apt install -y dialog gpg man wget
 fi
 
 
@@ -82,8 +100,24 @@ then
     echo "Creating a regular user without admin privileges..."
     echo "---------------------------------------------------"
 
-    useradd --create-home --shell /bin/bash ${PROOT_USER}
+    padmin useradd --create-home --shell /bin/bash ${PROOT_USER}
 fi
+
+
+echo ""
+echo "Proot environment ready. The following scripts have been added"
+echo "to your PATH:"
+echo ""
+echo "- padmin: Executes a command line in the proot environment as root."
+echo "          This is the recommended way to install software rather than"
+echo "          using sudo. Only remember that this way your home dir is"
+echo "          /root instead of /home/${PROOT_USER}."
+echo ""
+echo "- puser: Executes a command line as a regular user."
+echo "- penter_admin: Enter the proot environment as root."
+echo "- penter: Enter the proot environment as ${PROOT_USER}."
+echo ""
+
 
 
 

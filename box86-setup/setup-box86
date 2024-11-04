@@ -1,0 +1,51 @@
+#!/bin/bash
+
+function abort
+{
+    REASON=$1
+
+    if [ "$REASON" == "" ];
+    then
+        echo $REASON
+    fi
+
+    echo ""
+    
+    exit 1
+}
+
+
+function usage
+{
+
+}
+
+
+if [ "$1" == "" ] || [ "$1" == "-h" ] || [ "$1" == "--h" ];
+then
+    usage
+    abort
+fi
+
+
+if [ "$PROOT_DISTRO" == "" ];
+then
+    echo "PROOT_DISTRO environment variable not detected."
+    abort "Ensure the proot environment has been set-up and restart Termux."
+fi
+
+
+if [ -f "$PROOT_PATH/usr/local/bin/box86" ];
+then
+    abort "Box86 already installed in proot environment."
+fi
+
+
+cp "$HOME/termux-setup/box86-setup/installer" "$PROOT_PATH/root/install-box86"
+chmod +x "$PROOT_PATH/root/install-box86"
+
+padmin install-box86
+
+
+
+
