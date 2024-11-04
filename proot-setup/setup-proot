@@ -1,0 +1,95 @@
+#!/bin/bash
+
+function abort
+{
+    REASON=$1
+
+    if [ "$REASON" == "" ];
+    then
+        echo $REASON
+    fi
+
+    echo ""
+    
+    exit 1
+}
+
+
+function usage
+{
+
+}
+
+
+if [ "$1" == "" ] || [ "$1" == "-h" ] || [ "$1" == "--h" ];
+then
+    usage
+    abort
+fi
+
+
+
+export PROOT_DISTRO="ubuntu-oldstable"
+export PROOT_USER="puser"
+
+PROOT_PATH="$PREFIX/var/lib/proot-distro/installed-rootfs/${PROOT_DISTRO}"
+
+
+if ! [ -f "${PREFIX}/bin/proot-distro" ];
+then
+    echo "Installing proot-distro ..."
+    echo "---------------------------"
+    
+    pkg update
+    pkg install -y proot-distro
+
+    if ! [ "$?" == "0" ];
+    then
+        abort "Failed."
+    fi
+fi
+
+
+if ! [ -d "$PROOT_PATH" ];
+then
+    echo ""
+    echo "Installing ${PROOT_DISTRO} ..."
+    echo "------------------------------"
+
+    proot-distro install ${PROOT_DISTRO}
+
+    if ! [ "$?" == "0" ];
+    then
+        abort "Failed."
+    fi
+fi
+
+
+if ! [ -f "$PROOT_DISTRO/usr/bin/gpg" ];
+then
+    echo ""
+    echo "Installing some basic packages..."
+    echo "---------------------------------"
+
+    apt update
+    apt install -y dialog gpg man wget
+fi
+
+
+if ! [ -d "$PROOT_DISTRO/home/${PROOT_USER}" ];
+then
+    echo ""
+    echo "Creating a regular user without admin privileges..."
+    echo "---------------------------------------------------"
+
+    useradd --create-home --shell /bin/bash ${PROOT_USER}
+fi
+
+
+
+
+
+
+
+
+
