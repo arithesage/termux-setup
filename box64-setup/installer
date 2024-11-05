@@ -67,6 +67,13 @@ echo "==================="
 echo "--- Box64 setup ---"
 echo "==================="
 
+
+if [ "$DISTRO_NAME" == "ubuntu" ];
+then
+    cp -f "$HOME/apt/fixed-ubuntu_sources.list" /etc/apt/sources.list
+fi
+
+
 if ! [ -f "/usr/bin/gpg" ];
 then
     echo "Installing needed packages ..."

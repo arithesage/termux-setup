@@ -67,6 +67,13 @@ echo "==================="
 echo "--- Box86 setup ---"
 echo "==================="
 
+
+if [ "$DISTRO_NAME" == "ubuntu" ];
+then
+    cp -f "$HOME/apt/fixed-ubuntu_sources.list" /etc/apt/sources.list
+fi
+
+
 if ! [ -f "/usr/bin/gpg" ];
 then
     echo "Installing needed packages ..."
@@ -98,7 +105,7 @@ then
 fi
 
 
-curl -s $BOX86_URL
+curl -s $BOX86_URL > /dev/null
 
 if [ "$?" == "0" ];
 then
@@ -143,7 +150,7 @@ echo "Enabled armhf and i386 architectures in dpkg."
 
 if [ "$DISTRO_NAME" == "ubuntu" ];
 then
-    cp "$HOME/apt/ubuntu-i386.list" /et/apt/sources.list.d/
+    cp "$HOME/apt/ubuntu-i386.list" /etc/apt/sources.list.d/
 fi
 
 
