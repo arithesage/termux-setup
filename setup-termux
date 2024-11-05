@@ -33,20 +33,6 @@ fi
 TERMUX_SETUP_REPO="https://github.com/arithesage/termux-setup.git"
 
 
-if ! [ -d "$HOME/storage" ];
-then
-    echo "Execute 'termux-setup-storage' first, to grant Termux access"
-    echo "to the Android filesystem."
-    echo ""
-    echo "It is also recommended, if you have not done it yet, to"
-    echo "execute 'termux-change-repo' for selecting a mirror for"
-    echo "downloading the packages, although is not strictly necesary."
-    echo ""
-
-    abort
-fi
-
-
 echo "=================================="
 echo "Performing a basic Termux setup..."
 echo "=================================="
@@ -123,15 +109,18 @@ then
     
     echo "git clone $TERMUX_SETUP_REPO \$HOME/termux-setup" \
     >> "$HOME/download_termux-setup"
+
+    echo "chmod -R +x \"\$HOME/termux-setup\"" \
+    >> "$HOME/download_termux-setup"
+
+    chmod +x "$HOME/download_termux-setup"
     
     echo "Something went wrong cloning the repo."
     echo "You can retry executing '~/download_termux-setup'."
+else
+    chmod -R +x "$HOME/termux-setup"
+    "$HOME/termux-setup/find_extsd"
 fi
-
-chmod -R +x "$HOME/termux-setup"
-
-
-"$HOME/termux-setup/find_extsd"
 
 
 echo ""
