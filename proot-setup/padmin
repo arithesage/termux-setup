@@ -14,5 +14,5 @@ then
     SD_BINDING="--bind ${EXT_SD}:/mnt/extsd"
 fi
 
-proot-distro login ${PROOT_DISTRO} ${SD_BINDING} --shared-tmp $*
+proot-distro login ${PROOT_DISTRO} ${SD_BINDING} --shared-tmp -- $*
 
