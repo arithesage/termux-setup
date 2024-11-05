@@ -49,6 +49,8 @@ fi
 
 cp "$HOME/termux-setup/box86-setup/boxify" "$PROOT_PATH/usr/local/bin/boxify"
 cp "$HOME/termux-setup/box86-setup/installer" "$PROOT_PATH/root/install-box86"
+cp -r "$HOME/termux-setup/box86-setup/apt" "$PROOT_PATH/root/"
+cp -r "$HOME/termux-setup/box86-setup/deb" "$PROOT_PATH/root/"
 
 chmod +x "$PROOT_PATH/usr/local/bin/boxify"
 chmod +x "$PROOT_PATH/root/install-box86"
