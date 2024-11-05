@@ -53,7 +53,7 @@ cp "$HOME/termux-setup/box86-setup/installer" "$PROOT_PATH/root/install-box86"
 chmod +x "$PROOT_PATH/usr/local/bin/boxify"
 chmod +x "$PROOT_PATH/root/install-box86"
 
-padmin install-box86
+padmin /root/install-box86
 
 
 

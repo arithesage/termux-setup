@@ -21,6 +21,8 @@ then
 fi
 
 
+
+
 ARCH=$(uname -m)
 
 if ! [[ $ARCH == armv* ]] && ! [ "$ARCH" == "aarch64" ];
@@ -37,7 +39,7 @@ fi
 
 if [ "$DISTRO_NAME" == "" ];
 then
-    DISTRO_NAME=$(cat /etc/os-release | grep '^ID=\w+' | cut -d '=' -f 2)
+    DISTRO_NAME=$(cat /etc/os-release | grep ^ID= | cut -d '=' -f 2)
 
     if [ "$DISTRO_NAME" == "" ];
     then
@@ -56,6 +58,10 @@ then
 else
     BOX86="box86-generic-arm"
 fi
+
+
+BOX86_URL="https://Pi-Apps-Coders.github.io/box86-debs/debian"
+
 
 echo "==================="
 echo "--- Box86 setup ---"
@@ -92,20 +98,40 @@ then
 fi
 
 
-if ! [ -f "/etc/apt/sources/list.d/box86.sources" ];
+curl -s $BOX86_URL
+
+if [ "$?" == "0" ];
 then
-    echo "Types: deb" > /var/tmp/box86.sources
+    curl -s $BOX86_URL | grep "Moved" > /dev/null
 
-    echo "URIs: https://Pi-Apps-Coders.github.io/box86-debs/${DISTRO_NAME}" \
-    >> /var/tmp/box86.sources
+    if [ "$?" == "0" ];
+    then
+        echo "It seems that the URL where the box86 packages are usually"
+        echo "uploaded isn't available, so, we'll install a cached version."
+        echo ""
 
-    echo "Suites: ./" >> /var/tmp/box86.sources
-    echo "Signed-By: /usr/share/keyrings/box86-archive-keyring.gpg" \
-    >> /var/tmp/box86.sources
+        USE_CACHED_BOX86=1
+    fi
+fi
 
-    mv /var/tmp/box86.sources /etc/apt/sources.list.d/
 
-    echo "Added sources list for APT."
+if ! [ "$USE_CACHED_BOX86" == "1" ];
+then
+    if ! [ -f "/etc/apt/sources/list.d/box86.sources" ];
+    then
+        echo "Types: deb" > /var/tmp/box86.sources
+
+        echo "URIs: https://Pi-Apps-Coders.github.io/box86-debs/debian" \
+        >> /var/tmp/box86.sources
+
+        echo "Suites: ./" >> /var/tmp/box86.sources
+        echo "Signed-By: /usr/share/keyrings/box86-archive-keyring.gpg" \
+        >> /var/tmp/box86.sources
+
+        mv /var/tmp/box86.sources /etc/apt/sources.list.d/
+
+        echo "Added sources list for APT."
+    fi
 fi
 
 
@@ -114,22 +140,38 @@ dpkg --add-architecture i386
 
 echo "Enabled armhf and i386 architectures in dpkg."
 
+
 echo ""
 echo "Updating APT sources..."
 echo "-----------------------"
 
 apt update
 
+
 echo ""
 echo "Installing libc6 and ${BOX86} ..."
 echo "--------------------------------------"
 
-apt install -y libc6:armhf ${BOX86}
+apt install -y libc6:armhf
 
 if ! [ "$?" == "0" ];
 then
     echo ""
-    abort "Failed installing."
+    abort "Failed installing libc6."
+fi
+
+
+if ! [ "$USE_CACHED_BOX86"=="1" ];
+then
+    apt install -y ${BOX86}
+else
+    dpkg -i $(ls deb/box86*.deb)
+fi
+
+if ! [ "$?" == "0" ];
+then
+    echo ""
+    abort "Failed installing box86."
 fi
 
 
