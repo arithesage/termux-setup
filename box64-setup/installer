@@ -79,7 +79,7 @@ then
     echo "Installing needed packages ..."
     echo "------------------------------"
 
-    apt update
+    apt update    
     apt install -y dialog
     apt install -y gpg man python3 python-is-python3 wget
 
@@ -105,7 +105,7 @@ then
 fi
 
 
-curl -s $BOX64_URL
+curl -s $BOX64_URL > /dev/null
 
 if [ "$?" == "0" ];
 then
@@ -148,7 +148,7 @@ echo "Enabled amd64 architecture in dpkg."
 
 if [ "$DISTRO_NAME" == "ubuntu" ];
 then
-    cp "$HOME/apt/ubuntu-amd64.list" /et/apt/sources.list.d/
+    cp "$HOME/apt/ubuntu-amd64.list" /etc/apt/sources.list.d/
 fi
 
 
