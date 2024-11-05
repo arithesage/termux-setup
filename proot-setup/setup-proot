@@ -92,6 +92,7 @@ then
     echo "---------------------------------"
 
     padmin apt update
+    padmin apt upgrade -y
     padmin apt install -y dialog gpg man wget
 fi
 
