@@ -23,6 +23,7 @@ fi
 
 if ! [ -d "$HOME/storage" ];
 then
+    echo ""
     echo "Execute 'termux-setup-storage' first, to grant Termux access"
     echo "to the Android filesystem."
     echo ""

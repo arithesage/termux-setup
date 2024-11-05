@@ -97,6 +97,7 @@ then
 fi
 
 
+echo ""
 echo "Cloning 'termux-setup' repository..."
 echo "------------------------------------"
 
@@ -127,6 +128,8 @@ echo ""
 echo "Basic Termux setup done."
 echo "You can now setup more things using the scripts contained in the"
 echo "repository downloaded in ~/termux-setup' if you wish."
+echo ""
+echo "Restart Termux before continuing."
 echo ""
 
 
