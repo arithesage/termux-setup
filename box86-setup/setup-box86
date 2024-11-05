@@ -21,10 +21,16 @@ function usage
 }
 
 
-if [ "$1" == "" ] || [ "$1" == "-h" ] || [ "$1" == "--h" ];
+if [ "$1" == "-h" ] || [ "$1" == "--h" ];
 then
     usage
     abort
+fi
+
+
+if [ "$TERMUX_VERSION" == "" ];
+then
+    abort "This script is for Termux only."
 fi
 
 
@@ -41,7 +47,10 @@ then
 fi
 
 
+cp "$HOME/termux-setup/box86-setup/boxify" "$PROOT_PATH/usr/local/bin/boxify"
 cp "$HOME/termux-setup/box86-setup/installer" "$PROOT_PATH/root/install-box86"
+
+chmod +x "$PROOT_PATH/usr/local/bin/boxify"
 chmod +x "$PROOT_PATH/root/install-box86"
 
 padmin install-box86

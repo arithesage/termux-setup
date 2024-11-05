@@ -15,9 +15,9 @@ function abort
 }
 
 
-if ! [ "$TERMUX_VERSION" == "" ];
+if ! [ "$TERMUX_VERSION" == "" ] && [ "$ANDROID_DATA" == "" ];
 then
-    abort "This script must be executed in proot environment, not Termux."
+    abort "This script must be executed in a Termux proot environment."
 fi
 
 
