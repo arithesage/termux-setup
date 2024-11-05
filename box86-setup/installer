@@ -141,6 +141,12 @@ dpkg --add-architecture i386
 echo "Enabled armhf and i386 architectures in dpkg."
 
 
+if [ "$DISTRO_NAME" == "ubuntu" ];
+then
+    cp "$HOME/apt/ubuntu-i386.list" /et/apt/sources.list.d/
+fi
+
+
 echo ""
 echo "Updating APT sources..."
 echo "-----------------------"
@@ -175,15 +181,21 @@ then
 fi
 
 
-echo "export PATH=\$PATH:\$HOME/scripts" >> "$HOME/.environment"
-echo "export PATH=\$PATH:\$HOME/.local/bin" >> "$HOME/.environment"
-
-grep .environment $HOME/.bashrc > /dev/null
+grep .local/bin "$HOME/.environment" > /dev/null
 
 if ! [ "$?" == "0" ];
 then
-    echo "source \$HOME/.environment" >> $HOME/.bashrc
+    echo "export PATH=\$PATH:\$HOME/scripts" >> "$HOME/.environment"
+    echo "export PATH=\$PATH:\$HOME/.local/bin" >> "$HOME/.environment"
+
+    grep .environment $HOME/.bashrc > /dev/null
+
+    if ! [ "$?" == "0" ];
+    then
+        echo "source \$HOME/.environment" >> $HOME/.bashrc
+    fi
 fi
+
 
 echo ""
 echo "Finished!"
