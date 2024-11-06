@@ -18,10 +18,11 @@ function abort
 
 
 export BOX86_PROOT_DISTRO="debian-oldstable"
+export BOX86_PROOT_NAME="box86-64"
 export BOX86_PROOT_USER="puser"
 
 PROOTS_PATH="$PREFIX/var/lib/proot-distro/installed-rootfs"
-BOX86_PROOT_PATH="$PROOTS_PATH/$BOX86_PROOT_DISTRO"
+BOX86_PROOT_PATH="$PROOTS_PATH/$BOX86_PROOT_NAME"
 
 
 if ! [ -f "$HOME/scripts/padmin" ];
@@ -39,11 +40,14 @@ then
 fi
 
 
-if ! [ -f "$HOME/.box86-proot_env"];
+if ! [ -f "$HOME/.box86-proot_env" ];
 then
     echo "source \$HOME/.box86-proot_env" >> "$HOME/.environment"
 
     echo "export BOX86_PROOT_DISTRO=\"${BOX86_PROOT_DISTRO}\"" >> \
+         "$HOME/.box86-proot_env"
+
+    echo "export BOX86_PROOT_NAME=\"${BOX86_PROOT_NAME}\"" >> \
          "$HOME/.box86-proot_env"
 
     echo "export BOX86_PROOT_USER=\"${BOX86_PROOT_USER}\"" >> \
@@ -72,10 +76,10 @@ fi
 if ! [ -d "$BOX86_PROOT_PATH" ];
 then
     echo ""
-    echo "Installing ${BOX86_PROOT_DISTRO} ..."
+    echo "Installing ${BOX86_PROOT_NAME} ..."
     echo "-----------------------------------------"
 
-    proot-distro install ${BOX86_PROOT_DISTRO}
+    proot-distro install ${BOX86_PROOT_DISTRO} --override-alias $BOX86_PROOT_NAME
 
     if ! [ "$?" == "0" ];
     then
@@ -90,9 +94,9 @@ then
     echo "Installing some basic packages..."
     echo "---------------------------------"
 
-    padmin $BOX86_PROOT_DISTRO apt update
-    padmin $BOX86_PROOT_DISTRO apt upgrade -y
-    padmin $BOX86_PROOT_DISTRO apt install -y dialog gpg man wget
+    padmin $BOX86_PROOT_NAME apt update
+    padmin $BOX86_PROOT_NAME apt upgrade -y
+    padmin $BOX86_PROOT_NAME apt install -y dialog gpg man wget
 fi
 
 
@@ -102,7 +106,7 @@ then
     echo "Creating a regular user without admin privileges..."
     echo "---------------------------------------------------"
 
-    padmin $BOX86_PROOT_DISTRO useradd --create-home \
+    padmin $BOX86_PROOT_NAME useradd --create-home \
            --shell /bin/bash ${BOX86_PROOT_USER}
 fi
 

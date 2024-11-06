@@ -44,7 +44,7 @@ cp -r "$HOME/termux-setup/box86_64-setup/deb" "$BOX86_PROOT_PATH/root/"
 chmod +x "$BOX86_PROOT_PATH/usr/local/bin/boxify"
 chmod +x "$BOX86_PROOT_PATH/root/install-box64"
 
-padmin /root/install-box64
+padmin $BOX86_PROOT_NAME /root/install-box64
 
 
 
