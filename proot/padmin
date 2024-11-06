@@ -1,0 +1,55 @@
+#!/bin/bash
+
+
+function abort
+{
+    REASON=$1
+
+    if ! [ "$REASON" == "" ];
+    then
+        echo "$REASON"
+    fi
+
+    echo ""
+
+    exit 1
+}
+
+
+function usage
+{
+    echo "Usage: padmin <proot name> <command line>"
+    echo "Executes the given command line in the given proot installation."
+    echo "The command line is executed as root."
+    echo ""
+}
+
+
+if [ "$1" == "" ] || [ "$1" == "-h" ] || [ "$1" == "--help" ];
+then
+    usage
+    abort
+fi
+
+
+
+
+PROOT=$1
+CMDLINE=${@:2}
+
+
+if [ "$PROOT" == "" ] || [ "$CMDLINE" == "" ];
+then
+    usage
+    abort
+fi
+
+
+if ! [ "$EXT_SD" == "" ];
+then
+    SD_BINDING="--bind $EXT_SD:/mnt/extsd"
+fi
+
+
+proot-distro login $PROOT $SD_BINDING --shared-tmp -- $CMDLINE
+
