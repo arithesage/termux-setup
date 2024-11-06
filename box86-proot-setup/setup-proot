@@ -1,0 +1,128 @@
+#!/bin/bash
+
+function abort
+{
+    REASON=$1
+
+    if [ "$REASON" == "" ];
+    then
+        echo $REASON
+    fi
+
+    echo ""
+    
+    exit 1
+}
+
+
+
+
+export BOX86_PROOT_DISTRO="debian-oldstable"
+export BOX86_PROOT_USER="puser"
+
+PROOTS_PATH="$PREFIX/var/lib/proot-distro/installed-rootfs"
+BOX86_PROOT_PATH="$PROOTS_PATH/$BOX86_PROOT_DISTRO"
+
+
+if ! [ -f "$HOME/scripts/padmin" ];
+then
+    mkdir -p "$HOME/scripts"
+
+    cp "$HOME/termux-setup/box86-proot-setup/padmin" "$HOME/scripts/"
+    cp "$HOME/termux-setup/box86-proot-setup/penter" "$HOME/scripts/"
+    cp "$HOME/termux-setup/box86-proot-setup/penter_admin" "$HOME/scripts/"
+    cp "$HOME/termux-setup/box86-proot-setup/puser" "$HOME/scripts/"
+
+    echo "export PATH=\$PATH:\$HOME/scripts" >> "$HOME/.environment"
+    echo "source \$HOME/.box86-proot_env" >> "$HOME/.environment"
+
+    echo "export BOX86_PROOT_DISTRO=\"${BOX86_PROOT_DISTRO}\"" >> \
+         "$HOME/.box86-proot_env"
+
+    echo "export BOX86_PROOT_USER=\"${BOX86_PROOT_USER}\"" >> \
+         "$HOME/.box86-proot_env"
+
+    echo "export BOX86_PROOT_PATH=\"${BOX86_PROOT_PATH}\"" >> \
+         "$HOME/.box86-proot_env"
+
+    export PATH=$PATH:$HOME/scripts
+fi
+
+
+if ! [ -f "${PREFIX}/bin/proot-distro" ];
+then
+    echo "Installing proot-distro ..."
+    echo "---------------------------"
+    
+    pkg update
+    pkg install -y proot-distro
+
+    if ! [ "$?" == "0" ];
+    then
+        abort "Failed."
+    fi
+fi
+
+
+if ! [ -d "$BOX86_PROOT_PATH" ];
+then
+    echo ""
+    echo "Installing ${BOX86_PROOT_DISTRO} ..."
+    echo "-----------------------------------------"
+
+    proot-distro install ${BOX86_PROOT_DISTRO}
+
+    if ! [ "$?" == "0" ];
+    then
+        abort "Failed."
+    fi
+fi
+
+
+if ! [ -f "$BOX86_PROOT_PATH/usr/bin/gpg" ];
+then
+    echo ""
+    echo "Installing some basic packages..."
+    echo "---------------------------------"
+
+    padmin $BOX86_PROOT_DISTRO apt update
+    padmin $BOX86_PROOT_DISTRO apt upgrade -y
+    padmin $BOX86_PROOT_DISTRO apt install -y dialog gpg man wget
+fi
+
+
+if ! [ -d "$BOX86_PROOT_DISTRO_PATH/home/${PROOT_USER}" ];
+then
+    echo ""
+    echo "Creating a regular user without admin privileges..."
+    echo "---------------------------------------------------"
+
+    padmin $BOX86_PROOT_DISTRO useradd --create-home \
+           --shell /bin/bash ${BOX86_PROOT_USER}
+fi
+
+
+echo ""
+echo "Box86-64 proot environment ready."
+echo ""
+echo "The following scripts have been added to your PATH:"
+echo ""
+echo "- padmin: Executes a command line in the proot environment as root."
+echo "          This is the recommended way to install software rather than"
+echo "          using sudo. Only remember that this way your home dir is"
+echo "          /root instead of /home/${PROOT_USER}."
+echo ""
+echo "- puser: Executes a command line as a regular user."
+echo "- penter: Enter the proot environment as ${BOX86_PROOT_USER}."
+echo "- penter_admin: Enter the proot environment as root."
+echo ""
+
+
+
+
+
+
+
+
+
+
