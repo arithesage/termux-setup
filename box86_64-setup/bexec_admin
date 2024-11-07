@@ -1,4 +1,4 @@
 #!/bin/bash
 
-padmin $BOX86_PROOT_NAME $*
+pexec_admin $BOX86_PROOT_NAME $*
 

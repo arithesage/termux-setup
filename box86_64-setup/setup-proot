@@ -25,19 +25,32 @@ PROOTS_PATH="$PREFIX/var/lib/proot-distro/installed-rootfs"
 BOX86_PROOT_PATH="$PROOTS_PATH/$BOX86_PROOT_NAME"
 
 
+if ! [ -f "$HOME/scripts/penter" ];
+then
+    mkdir -p "$HOME/scripts"
+
+    cp "$HOME/termux-setup/proot/pexec_admin" "$HOME/scripts/"
+    cp "$HOME/termux-setup/proot/penter" "$HOME/scripts/"
+    cp "$HOME/termux-setup/proot/penter_admin" "$HOME/scripts/"
+    cp "$HOME/termux-setup/proot/pexec" "$HOME/scripts/"
+fi
+
+
 if ! [ -f "$HOME/scripts/boxenter" ];
 then
     mkdir -p "$HOME/scripts"
 
-    cp "$HOME/termux-setup/proot/bexec_admin" "$HOME/scripts/"
-    cp "$HOME/termux-setup/proot/boxenter" "$HOME/scripts/"
-    cp "$HOME/termux-setup/proot/boxenter_admin" "$HOME/scripts/"
-    cp "$HOME/termux-setup/proot/bexec" "$HOME/scripts/"
+    cp "$HOME/termux-setup/box86_64-setup/bexec_admin" "$HOME/scripts/"
+    cp "$HOME/termux-setup/box86_64-setup/boxenter" "$HOME/scripts/"
+    cp "$HOME/termux-setup/box86_64-setup/boxenter_admin" "$HOME/scripts/"
+    cp "$HOME/termux-setup/box86_64-setup/bexec" "$HOME/scripts/"
 
     echo "export PATH=\$PATH:\$HOME/scripts" >> "$HOME/.environment"
 
     export PATH=$PATH:$HOME/scripts
 fi
+
+chmod -R +x $HOME/scripts
 
 
 if ! [ -f "$HOME/.box86-proot_env" ];
