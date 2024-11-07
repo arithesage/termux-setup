@@ -110,18 +110,18 @@ then
 
     bexec_admin apt update
     bexec_admin apt upgrade -y
-    bexec_admin apt install -y dialog gpg man wget
+    bexec_admin apt install -y dialog gpg wget
 fi
 
 
-if ! [ -d "$BOX86_PROOT_PATH/home/${PROOT_USER}" ];
+if ! [ -d "$BOX86_PROOT_PATH/home/$BOX86_PROOT_USER" ];
 then
     echo ""
     echo "Creating a regular user without admin privileges..."
     echo "---------------------------------------------------"
 
     bexec_admin useradd --create-home 
-                --shell /bin/bash ${BOX86_PROOT_USER}
+                --shell /bin/bash $BOX86_PROOT_USER
 fi
 
 
