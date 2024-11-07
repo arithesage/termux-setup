@@ -26,7 +26,7 @@ fi
 if [ "$BOX86_PROOT_DISTRO" == "" ];
 then
     echo "BOX86_PROOT_DISTRO environment variable not detected."
-    abort "Ensure the Box86_64 proot environment has been set-up and restart Termux."
+    abort "Ensure the Box86-64 proot environment has been set-up and restart Termux."
 fi
 
 
@@ -44,7 +44,7 @@ cp -r "$HOME/termux-setup/box86_64-setup/deb" "$BOX86_PROOT_PATH/root/"
 chmod +x "$BOX86_PROOT_PATH/usr/local/bin/boxify"
 chmod +x "$BOX86_PROOT_PATH/root/install-box86"
 
-padmin $BOX86_PROOT_NAME /root/install-box86
+bexec_admin /root/install-box86
 
 
 

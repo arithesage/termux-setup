@@ -25,14 +25,14 @@ PROOTS_PATH="$PREFIX/var/lib/proot-distro/installed-rootfs"
 BOX86_PROOT_PATH="$PROOTS_PATH/$BOX86_PROOT_NAME"
 
 
-if ! [ -f "$HOME/scripts/padmin" ];
+if ! [ -f "$HOME/scripts/boxenter" ];
 then
     mkdir -p "$HOME/scripts"
 
-    cp "$HOME/termux-setup/proot/padmin" "$HOME/scripts/"
-    cp "$HOME/termux-setup/proot/penter" "$HOME/scripts/"
-    cp "$HOME/termux-setup/proot/penter_admin" "$HOME/scripts/"
-    cp "$HOME/termux-setup/proot/puser" "$HOME/scripts/"
+    cp "$HOME/termux-setup/proot/bexec_admin" "$HOME/scripts/"
+    cp "$HOME/termux-setup/proot/boxenter" "$HOME/scripts/"
+    cp "$HOME/termux-setup/proot/boxenter_admin" "$HOME/scripts/"
+    cp "$HOME/termux-setup/proot/bexec" "$HOME/scripts/"
 
     echo "export PATH=\$PATH:\$HOME/scripts" >> "$HOME/.environment"
 
@@ -79,7 +79,8 @@ then
     echo "Installing ${BOX86_PROOT_NAME} ..."
     echo "-----------------------------------------"
 
-    proot-distro install ${BOX86_PROOT_DISTRO} --override-alias $BOX86_PROOT_NAME
+    proot-distro install ${BOX86_PROOT_DISTRO} \
+                         --override-alias $BOX86_PROOT_NAME
 
     if ! [ "$?" == "0" ];
     then
@@ -94,9 +95,9 @@ then
     echo "Installing some basic packages..."
     echo "---------------------------------"
 
-    padmin $BOX86_PROOT_NAME apt update
-    padmin $BOX86_PROOT_NAME apt upgrade -y
-    padmin $BOX86_PROOT_NAME apt install -y dialog gpg man wget
+    bexec_admin apt update
+    bexec_admin apt upgrade -y
+    bexec_admin apt install -y dialog gpg man wget
 fi
 
 
@@ -106,8 +107,8 @@ then
     echo "Creating a regular user without admin privileges..."
     echo "---------------------------------------------------"
 
-    padmin $BOX86_PROOT_NAME useradd --create-home \
-           --shell /bin/bash ${BOX86_PROOT_USER}
+    bexec_admin useradd --create-home 
+                --shell /bin/bash ${BOX86_PROOT_USER}
 fi
 
 
@@ -116,14 +117,16 @@ echo "Box86-64 proot environment ready."
 echo ""
 echo "The following scripts have been added to your PATH:"
 echo ""
-echo "- padmin: Executes a command line in the proot environment as root."
-echo "          This is the recommended way to install software rather than"
-echo "          using sudo. Only remember that this way your home dir is"
-echo "          /root instead of /home/${BOX86_PROOT_USER}."
+echo "- bexec_admin:    Executes a command line in the proot as root."
+echo "                  This is the recommended way to install software"
+echo "                  rather than using sudo."
 echo ""
-echo "- puser: Executes a command line as a regular user."
-echo "- penter: Enter the proot environment as ${BOX86_PROOT_USER}."
-echo "- penter_admin: Enter the proot environment as root."
+echo "                  Remember that this way your home dir is"
+echo "                  /root instead of /home/${BOX86_PROOT_USER}."
+echo ""
+echo "- bexec:          Executes a command line as ${BOX86_PROOT_USER}."
+echo "- boxenter:       Enter the proot environment as ${BOX86_PROOT_USER}."
+echo "- boxenter_admin: Enter the proot environment as root."
 echo ""
 
 
