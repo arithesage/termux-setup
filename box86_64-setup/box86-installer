@@ -60,7 +60,11 @@ else
 fi
 
 
-BOX86_URL="https://Pi-Apps-Coders.github.io/box86-debs/debian"
+BOX86_MAIN_URL="https://Pi-Apps-Coders.github.io/box86-debs/debian"
+BOX86_MAIN_GPG_URL="https://pi-apps-coders.github.io/box86-debs/KEY.gpg"
+
+BOX86_ALT_URL="https://ryanfortner.github.io/box86-debs"
+BOX86_ALT_GPG_URL="https://ryanfortner.github.io/box86-debs/KEY.gpg"
 
 
 echo "==================="
@@ -81,20 +85,87 @@ then
 
     apt update
     apt install -y dialog
-    apt install -y gpg man python3 python-is-python3 wget
+    apt install -y gpg python3 python-is-python3 wget
 
     echo ""
 fi
+
 
 if ! [ -d "/usr/share/keyrings" ];
 then
     make -p "/usr/share/keyrings"
 fi
 
-if ! [ -f "/usr/share/keyrings/box86-archive-keyring.gpg" ];
+
+echo -n "Checking main box86 url..."
+curl -s $BOX86_MAIN_URL > /dev/null
+
+if [ "$?" == "0" ];
 then
-    wget -qO- "https://pi-apps-coders.github.io/box86-debs/KEY.gpg" | \
-    gpg --dearmor -o "/usr/share/keyrings/box86-archive-keyring.gpg"
+    BOX86_MAIN_URL_OK=1
+    echo "OK"
+else
+    echo "ERROR"
+fi
+
+
+echo "Checking alt box86 url..."
+curl -s $BOX86_ALT_URL > /dev/null
+
+if [ "$?" == "0" ];
+then
+    BOX86_ALT_URL_OK=1
+    echo "OK"
+else
+    echo "ERROR"
+fi
+
+
+if ! [ "$BOX86_MAIN_URL_OK" == "1" ] && ! [ "$BOX86_ALT_URL_OK" == "0"];
+then
+    echo "Failed connecting box86 repositories."
+    echo "Using cached package."
+    echo ""
+
+    USE_CACHED_BOX86=1
+fi
+
+
+curl -s $BOX86_MAIN_URL | grep "Moved" > /dev/null
+
+if [ "$?" == "0" ];
+then
+    echo "It seems main box86 repository is no longer there."
+    echo "Checking alternative ..."
+
+    curl -s $BOX86_ALT_URL | grep "Moved" > /dev/null
+
+    if [ "$?" == "0" ];
+    then
+        echo "This one seems to be gone also."
+        echo "Using cached package."
+
+        USE_CACHED_BOX86=1
+    else
+        BOX86_URL=$BOX86_ALT_URL
+        BOX86_GPG_URL=$BOX86_ALT_GPG_URL
+    fi
+else
+    BOX86_URL=$BOX86_MAIN_URL
+    BOX86_GPG_URL=$BOX86_MAIN_GPG_URL
+fi
+
+
+if ! [ -f "/usr/share/keyrings/box86.gpg" ];
+then
+    if ! [ "$USED_CACHED_BOX86" == "1"];
+    then
+        wget -qO- "$BOX86_GPG_URL" | \
+        gpg --dearmor -o "/usr/share/keyrings/box86.gpg"
+    else
+        ls "$HOME/deb/*.gpg" | \
+        gpg --dearmor -o "/usr/share/keyrings/box86.gpg"
+    fi
 
     if ! [ "$?" == "0" ];
     then
@@ -105,34 +176,17 @@ then
 fi
 
 
-curl -s $BOX86_URL > /dev/null
-
-if [ "$?" == "0" ];
-then
-    curl -s $BOX86_URL | grep "Moved" > /dev/null
-
-    if [ "$?" == "0" ];
-    then
-        echo "It seems that the URL where the box86 packages are usually"
-        echo "uploaded isn't available, so, we'll install a cached version."
-        echo ""
-
-        USE_CACHED_BOX86=1
-    fi
-fi
-
-
 if ! [ "$USE_CACHED_BOX86" == "1" ];
 then
     if ! [ -f "/etc/apt/sources/list.d/box86.sources" ];
     then
         echo "Types: deb" > /var/tmp/box86.sources
 
-        echo "URIs: https://Pi-Apps-Coders.github.io/box86-debs/debian" \
+        echo "URIs: $BOX86_URL" \
         >> /var/tmp/box86.sources
 
         echo "Suites: ./" >> /var/tmp/box86.sources
-        echo "Signed-By: /usr/share/keyrings/box86-archive-keyring.gpg" \
+        echo "Signed-By: /usr/share/keyrings/box86.gpg" \
         >> /var/tmp/box86.sources
 
         mv /var/tmp/box86.sources /etc/apt/sources.list.d/
