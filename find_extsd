@@ -21,15 +21,19 @@ then
 fi
 
 
+echo ""
+echo "Searching for external SD card..."
+
+
 if ! [ -d "$HOME/storage" ];
 then
     echo ""
-    echo "Execute 'termux-setup-storage' first, to grant Termux access"
-    echo "to the Android filesystem."
+    echo "Can't access Android filesystem."
+    echo "Execute 'termux-setup-storage' first, to grant Termux permission."
     echo ""
-    echo "It is also recommended, if you have not done it yet, to"
-    echo "execute 'termux-change-repo' for selecting a mirror for"
-    echo "downloading the packages, although is not strictly necesary."
+    echo "It is also recommended, if you have not done it yet,"
+    echo "to execute 'termux-change-repo' for selecting a mirror"
+    echo "for downloading the packages, although is not strictly necesary."
     echo ""
 
     abort
