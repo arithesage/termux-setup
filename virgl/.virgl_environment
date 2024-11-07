@@ -1,0 +1,4 @@
+export MESA_LOADER_DRIVER_OVERRIDE=zink
+export GALLIUM_DRIVER=zink
+export ZINK_DESCRIPTOR="lazy virgl_test_server --use-gl-surfaceless &"
+

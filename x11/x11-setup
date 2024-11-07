@@ -1,0 +1,64 @@
+#!/bin/bash
+
+
+function abort
+{
+    REASON=$1
+
+    if [ "$REASON" == "" ];
+    then
+        echo $REASON
+    fi
+
+    echo ""
+    
+    exit 1
+}
+
+
+
+
+if [ -f "$PREFIX/bin/termux-x11" ];
+then
+    echo "Termux-X11 is already installed."
+    abort
+fi
+
+
+if ! [ -f $PREFIX/etc/apt/sources.list.d/x11.list ];
+then
+    echo "Installing 'X11' repository ..."
+    echo "==============================="
+    echo ""
+
+    pkg update
+    pkg install -y x11-repo
+
+    if ! [ "$?" == "0" ];
+    then
+        abort "Failed!"
+    fi
+fi
+
+
+echo ""
+echo "Installing 'termux-x11' ..."
+echo "==========================="
+
+pkg update
+pkg install -y termux-x11
+
+if ! [ "$?" == "0" ];
+then
+    abort "Failed!"
+fi
+
+
+
+if ! [ -f "$HOME/.x11_environment" ];
+then
+    cp "$HOME/termux-setup/x11/.x11_environment" "$HOME/"
+    echo "source \$HOME/.x11_environment" >> $HOME/.bashrc
+fi
+
+

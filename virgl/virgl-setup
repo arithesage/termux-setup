@@ -1,0 +1,58 @@
+#!/bin/bash
+
+
+function abort
+{
+    REASON=$1
+
+    if [ "$REASON" == "" ];
+    then
+        echo $REASON
+    fi
+
+    echo ""
+    
+    exit 1
+}
+
+
+
+
+echo "Setting up VirGL..."
+echo "==================="
+
+if ! [ -f $PREFIX/etc/apt/sources.list.d/tur.list ];
+then
+    echo ""
+    echo "Installing 'tur' repository ..."
+    echo "==============================="    
+
+    pkg update
+    pkg install -y tur-repo
+
+    if ! [ "$?" == "0" ];
+    then
+        abort "Failed!"
+    fi    
+fi
+
+
+echo ""
+echo "Installing mesa, virgl and vulkan packages ..."
+echo "=============================================="
+
+pkg install -y mesa-zink virglrenderer-mesa-zink vulkan-loader-android
+
+if ! [ "$?" == "0" ];
+then
+    abort "Failed!"
+fi
+
+
+if ! [ -f "$HOME/.virgl_environment" ];
+then
+    cp "$HOME/termux-setup/virgl/.virgl_environment" "$HOME/"
+    echo "source \$HOME/.virgl_environment" >> $HOME/.bashrc
+fi
+
+
