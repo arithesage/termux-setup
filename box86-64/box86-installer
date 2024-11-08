@@ -60,10 +60,10 @@ else
 fi
 
 
-BOX86_MAIN_URL="https://Pi-Apps-Coders.github.io/box86-debs/debian"
+BOX86_MAIN_URL="https://Pi-Apps-Coders.github.io/box86-debs/debian/"
 BOX86_MAIN_GPG_URL="https://pi-apps-coders.github.io/box86-debs/KEY.gpg"
 
-BOX86_ALT_URL="https://ryanfortner.github.io/box86-debs"
+BOX86_ALT_URL="https://ryanfortner.github.io/box86-debs/"
 BOX86_ALT_GPG_URL="https://ryanfortner.github.io/box86-debs/KEY.gpg"
 
 
@@ -149,10 +149,16 @@ then
     else
         BOX86_URL=$BOX86_ALT_URL
         BOX86_GPG_URL=$BOX86_ALT_GPG_URL
+
+        echo ""
+        echo "Alternative box86 repository will be used."
     fi
 else
     BOX86_URL=$BOX86_MAIN_URL
     BOX86_GPG_URL=$BOX86_MAIN_GPG_URL
+
+    echo ""
+    echo "Main box86 repository will be used."
 fi
 
 
@@ -169,6 +175,11 @@ then
 
     if ! [ "$?" == "0" ];
     then
+        if [ -f "/usr/share/keyrings/box86.gpg" ];
+        then
+            rm /usr/share/keyrings/box86.gpg
+        fi
+
         abort "Could not intall Box86 GPG key."
     fi
 

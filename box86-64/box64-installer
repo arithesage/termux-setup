@@ -148,10 +148,16 @@ then
     else
         BOX64_URL=$BOX64_ALT_URL
         BOX64_GPG_URL=$BOX64_ALT_GPG_URL
+
+        echo ""
+        echo "Alternative box64 repository will be used."
     fi
 else
     BOX64_URL=$BOX64_MAIN_URL
     BOX64_GPG_URL=$BOX64_MAIN_GPG_URL
+
+    echo ""
+    echo "Main box64 repository will be used."
 fi
 
 
@@ -168,6 +174,11 @@ then
 
     if ! [ "$?" == "0" ];
     then
+        if [ -f "/usr/share/keyrings/box64.gpg" ];
+        then
+            rm /usr/share/keyrings/box64.gpg
+        fi
+
         abort "Could not intall Box64 GPG key."
     fi
 
