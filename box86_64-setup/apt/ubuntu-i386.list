@@ -1,3 +1,0 @@
-deb [arch=i386] http://archive.ubuntu.com/ubuntu jammy main multiverse restricted universe
-deb [arch=i386] http://archive.ubuntu.com/ubuntu jammy-updates main multiverse restricted universe
-
