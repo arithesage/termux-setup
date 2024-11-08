@@ -1,0 +1,42 @@
+#!/bin/bash
+
+function abort
+{
+    REASON=$1
+
+    if [ "$REASON" == "" ];
+    then
+        echo $REASON
+    fi
+
+    echo ""
+    
+    exit 1
+}
+
+
+
+
+if [ "$TERMUX_VERSION" == "" ];
+then
+    abort "This script is for Termux only."
+fi
+
+
+if [ -f "/usr/bin/wine32" ];
+then
+    abort "Wine (32 bits) is already installed."
+fi
+
+
+if ! [ -f "/usr/lib/arm-linux-gnueabihf/libvkd3d.so.1" ];
+then
+    "$HOME/install-wine32-deps"
+
+    if ! [ "$?" == "0" ];
+    then
+        abort "Some required wine32 dependencies failed to install."
+    fi
+fi
+
+
