@@ -36,8 +36,20 @@ then
 fi
 
 
-cp "$HOME/termux-setup/box86-64/boxify" "$BOX86_PROOT_PATH/usr/local/bin/boxify"
-cp "$HOME/termux-setup/box86-64/box86-installer" "$BOX86_PROOT_PATH/root/install-box86"
+if ! [ -d "$BOX86_PROOT_PATH/root/scripts" ];
+then
+    mkdir "$BOX86_PROOT_PATH/root/scripts"
+fi
+
+cp "$HOME/termux-setup/box86-64/deb-manual-install" \
+   "$BOX86_PROOT_PATH/root/scripts/"
+
+cp "$HOME/termux-setup/box86-64/boxify" \
+   "$BOX86_PROOT_PATH/usr/local/bin/boxify"
+
+cp "$HOME/termux-setup/box86-64/box86-installer" \
+   "$BOX86_PROOT_PATH/root/install-box86"
+   
 cp -r "$HOME/termux-setup/box86-64/apt" "$BOX86_PROOT_PATH/root/"
 cp -r "$HOME/termux-setup/box86-64/deb" "$BOX86_PROOT_PATH/root/"
 
