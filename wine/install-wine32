@@ -62,7 +62,35 @@ then
 fi
 
 
-sudo wget -O /etc/apt/keyrings/winehq-archive.key $WINE_GPG_URL
+echo -n "Checking if Wine site is available..."
+curl -s https://dl.winehq.org > /dev/null
+
+if [ "$?" == "0" ];
+then
+    WINE_URL_OK=1
+    echo "OK"
+else
+    echo "ERROR"
+fi
+
+
+if ! [ "$WINE_URL_OK" == "1" ];
+then
+    echo "Failed connecting Wine site."
+    echo "Using cached package."
+    echo ""
+
+    USE_CACHED_WINE=1
+fi
+
+
+if ! [ "$USE_CACHED_WINE" == "1" ];
+then
+    wget -O /etc/apt/keyrings/winehq-archive.key $WINE_GPG_URL
+else
+    cp "$HOME/deb/winehq.key" /etc/apt/keyrings/
+fi
+
 
 if ! [ "$?" == "0" ];
 then
@@ -72,37 +100,69 @@ fi
 echo "Added GPG key to keyrings."
 
 
-sudo wget -NP /etc/apt/sources.list.d/ $WINE_SOURCES_URL
-
-echo "Added sources.list to APT database."
-
-
-echo "Updating APT database..."
-echo "------------------------"
-
-apt update
+if ! [ "$USE_CACHED_WINE" == "1" ];
+then
+    wget -NP /etc/apt/sources.list.d/ $WINE_SOURCES_URL
+    echo "Added sources.list to APT database."
 
 
-echo ""
-echo "Downloading wine..."
-echo "-------------------"
+    echo "Updating APT database..."
+    echo "------------------------"
 
-apt download wine-$WINE_VARIANT
-apt download wine-$WINE_VARIANT-i386
+    apt update
+
+
+    echo ""
+    echo "Downloading wine..."
+    echo "-------------------"
+
+    apt download wine-$WINE_VARIANT
+    apt download wine-$WINE_VARIANT-i386
+fi
 
 
 echo ""
 echo "Installing ..."
 echo "--------------"
 
-dpkg-deb -x $(ls wine-${WINE_VARIANT}_*.deb) \
-         "/opt/wine-$WINE_VARIANT"
+
+if ! [ "$USE_CACHED_WINE" == "1" ];
+then
+    dpkg-deb -x $(ls wine-${WINE_VARIANT}_*.deb) \
+            "/var/tmp/wine"
 
 
-dpkg-deb -x $(ls wine-${WINE_VARIANT}-i386*.deb) \
-         "$HOME/.local/installs/wine-$WINE_VARIANT"
+    dpkg-deb -x $(ls wine-${WINE_VARIANT}-i386*.deb) \
+            "/var/tmp/wine"
+else
+    dpkg-deb -x $(ls $HOME/deb/wine-${WINE_VARIANT}_*.deb) \
+            "/var/tmp/wine"
 
 
-if [ -f "$HOME/.local/installs/wine-$WINE_VARIANT/" ]
+    dpkg-deb -x $(ls $HOME/deb/wine-${WINE_VARIANT}-i386*.deb) \
+            "/var/tmp/wine"
+fi
+
+
+if ! [ -f "/var/tmp/wine/opt/wine-${WINE_VARIANT}/bin/wine" ];
+then
+    abort "Failed extracting Wine in /var/tmp/wine."
+fi
+
+
+mv /var/tmp/wine/opt/wine-${WINE_VARIANT} /opt/
+
+mv /var/tmp/wine/usr/share/doc/wine-${WINE_VARIANT} /usr/share/doc/
+
+mv /var/tmp/wine/usr/share/lintian/overrides/wine-${WINE_VARIANT}-i386 \
+   /usr/share/lintian/overrides/
+
+
+echo "export PATH=\$PATH:/opt/wine-${WINE_VARIANT}/bin" > $HOME/.wine_env
+cp $HOME/.wine_env /opt/wine-${WINE_VARIANT}/
+
+
+echo "Finished."
+echo ""
 
 
