@@ -60,10 +60,10 @@ else
 fi
 
 
-BOX64_MAIN_URL="https://Pi-Apps-Coders.github.io/box64-debs/debian"
+BOX64_MAIN_URL="https://Pi-Apps-Coders.github.io/box64-debs/debian/"
 BOX64_MAIN_GPG_URL="https://pi-apps-coders.github.io/box86-debs/KEY.gpg"
 
-BOX64_ALT_URL="https://ryanfortner.github.io/box86-debs"
+BOX64_ALT_URL="https://ryanfortner.github.io/box86-debs/"
 BOX64_ALT_GPG_URL="https://ryanfortner.github.io/box64-debs/KEY.gpg"
 
 echo "==================="
@@ -108,7 +108,7 @@ else
 fi
 
 
-echo "Checking alt box64 url..."
+echo -n "Checking alt box64 url..."
 curl -s $BOX64_ALT_URL > /dev/null
 
 if [ "$?" == "0" ];
@@ -157,7 +157,7 @@ fi
 
 if ! [ -f "/usr/share/keyrings/box64.gpg" ];
 then
-    if ! [ "$USED_CACHED_BOX64" == "1"];
+    if ! [ "$USED_CACHED_BOX64" == "1" ];
     then
         wget -qO- "$BOX64_GPG_URL" | \
         gpg --dearmor -o "/usr/share/keyrings/box64.gpg"
