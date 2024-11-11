@@ -136,7 +136,7 @@ then
     echo "Downloading wine..."
     echo "-------------------"
 
-    apt download wine-$WINE_VARIANT
+    apt download wine-$WINE_VARIANT:i386
     apt download wine-$WINE_VARIANT-i386
 fi
 
@@ -170,11 +170,11 @@ then
 fi
 
 
-mv /var/tmp/wine/opt/wine-${WINE_VARIANT} /opt/
+cp -r /var/tmp/wine/opt/wine-${WINE_VARIANT} /opt/
 
-mv /var/tmp/wine/usr/share/doc/wine-${WINE_VARIANT} /usr/share/doc/
+cp -r /var/tmp/wine/usr/share/doc/wine-${WINE_VARIANT} /usr/share/doc/
 
-mv /var/tmp/wine/usr/share/lintian/overrides/wine-${WINE_VARIANT}-i386 \
+cp -r /var/tmp/wine/usr/share/lintian/overrides/wine-${WINE_VARIANT}-i386 \
    /usr/share/lintian/overrides/
 
 
@@ -198,6 +198,9 @@ echo "" >> "$UNINSTALLER"
 
 echo "Done." >> "$UNINSTALLER"
 echo "" >> "$UNINSTALLER"
+
+
+boxify /opt/wine-${WINE_VARIANT}/bin/wine /usr/local/bin/wine
 
 
 echo "Finished. Execute ${UNINSTALLER} to remove Wine."
