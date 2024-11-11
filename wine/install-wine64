@@ -1,0 +1,220 @@
+#!/bin/bash
+
+function abort
+{
+    REASON=$1
+
+    if [ "$REASON" == "" ];
+    then
+        echo $REASON
+    fi
+
+    echo ""
+    
+    exit 1
+}
+
+
+if ! [ "$TERMUX_VERSION" == "" ] && [ "$ANDROID_DATA" == "" ];
+then
+    abort "This script must be executed in a Termux proot environment."
+fi
+
+
+
+
+WINE_BUILDS_URL="https://dl.winehq.org/wine-builds"
+DEBIAN_OLDSTABLE_BUILDS_URL="$WINE_BUILDS_URL/debian/dists/bullseye"
+
+WINE_SOURCES_URL="$DEBIAN_OLDSTABLE_BUILDS_URL/winehq-bullseye.sources"
+WINE_GPG_URL="$WINE_BUILDS_URL/winehq.key"
+
+WINE_VARIANT="staging"
+
+
+if [ -f "/opt/wine-${WINE_VARIANT}/bin/wine64" ];
+then
+    abort "Wine (64 bits) is already installed."
+fi
+
+
+if ! [ -f "/usr/lib/arm-linux-gnueabihf/libvkd3d.so.1" ];
+then
+    "$HOME/install-wine64-deps"
+
+    if ! [ "$?" == "0" ];
+    then
+        abort "Some required dependencies failed to install."
+    fi
+fi
+
+
+echo ""
+
+
+dpkg --print-foreign-architectures | grep amd64 > /dev/null
+
+if ! [ "$?" == "0" ];
+then
+    dpkg --add-architecture amd64
+    echo "Added AMAD64 architecture."
+fi
+
+
+echo -n "Checking if Wine site is available..."
+curl -s https://dl.winehq.org > /dev/null
+
+if [ "$?" == "0" ];
+then
+    WINE_URL_OK=1
+    echo "OK"
+else
+    echo "ERROR"
+fi
+
+
+if ! [ "$WINE_URL_OK" == "1" ];
+then
+    echo "Failed connecting Wine site."
+    echo "Using cached package."
+    echo ""
+
+    USE_CACHED_WINE=1
+fi
+
+
+if ! [ -f "/etc/apt/keyrings/winehq-archive.key" ];
+then
+    if ! [ -d "/etc/apt/keyrings" ];
+    then
+        mkdir "/etc/apt/keyrings"
+    fi
+
+
+    if ! [ "$USE_CACHED_WINE" == "1" ];
+    then
+        wget -O /etc/apt/keyrings/winehq-archive.key $WINE_GPG_URL
+    else
+        cp "$HOME/deb/winehq.key" /etc/apt/keyrings/
+    fi
+
+
+    if ! [ "$?" == "0" ];
+    then
+        abort "Failed adding GPG key."
+    fi
+
+    echo "Added GPG key to keyrings."
+fi
+
+
+if ! [ "$USE_CACHED_WINE" == "1" ];
+then
+    echo "Cleaning old Wine downloads..."
+    rm $HOME/wine*.deb > /dev/null
+
+
+    echo ""
+    echo "Checking for updated APT sources.list..."
+    echo "----------------------------------------"
+    wget -NP /etc/apt/sources.list.d/ $WINE_SOURCES_URL
+    
+    if [ "$?" == "0" ];
+    then
+        echo "Updated sources.list in APT database."
+    fi
+
+
+    echo ""
+    echo "Updating APT database..."
+    echo "------------------------"
+
+    apt update
+
+
+    echo ""
+    echo "Downloading wine..."
+    echo "-------------------"
+
+    apt download wine-$WINE_VARIANT
+    apt download wine-$WINE_VARIANT-amd64
+fi
+
+
+echo ""
+echo "Installing ..."
+echo "--------------"
+
+
+if ! [ "$USE_CACHED_WINE" == "1" ];
+then
+    dpkg-deb -x $(ls wine-${WINE_VARIANT}_*.deb) \
+            "/var/tmp/wine"
+
+
+    dpkg-deb -x $(ls wine-${WINE_VARIANT}-amd64*.deb) \
+            "/var/tmp/wine"
+else
+    dpkg-deb -x $(ls $HOME/deb/wine-${WINE_VARIANT}_*.deb) \
+            "/var/tmp/wine"
+
+
+    dpkg-deb -x $(ls $HOME/deb/wine-${WINE_VARIANT}-amd64*.deb) \
+            "/var/tmp/wine"
+fi
+
+
+if ! [ -f "/var/tmp/wine/opt/wine-${WINE_VARIANT}/bin/wine64" ];
+then
+    abort "Failed extracting Wine64 in /var/tmp/wine."
+fi
+
+
+mv /var/tmp/wine/opt/wine-${WINE_VARIANT} /opt/
+
+mv /var/tmp/wine/usr/share/doc/wine-${WINE_VARIANT} /usr/share/doc/
+
+mv /var/tmp/wine/usr/share/lintian/overrides/wine-${WINE_VARIANT}-amd64 \
+   /usr/share/lintian/overrides/
+
+
+echo "export PATH=\$PATH:/opt/wine-${WINE_VARIANT}/bin" > $HOME/.wine_env
+cp $HOME/.wine_env /opt/wine-${WINE_VARIANT}/
+
+
+UNINSTALLER="$HOME/wine64-uninstaller"
+
+echo "#!/bin/bash" > "$UNINSTALLER"
+echo "" >> "$UNINSTALLER"
+echo "if ! [ -f \"/opt/wine-${WINE_VARIANT}/bin/wine64\" ];" >> "$UNINSTALLER"
+echo "then" >> "$UNINSTALLER"
+echo "    echo \"Didn't found Wine64 installed.\"" >> "$UNINSTALLER"
+echo "    exit 1" >> "$UNINSTALLER"
+echo "fi" >> "$UNINSTALLER"
+echo "" >> "$UNINSTALLER"
+echo "rm -rf /opt/wine-${WINE_VARIANT}" >> "$UNINSTALLER"
+echo "rm -rf /usr/share/doc/wine-${WINE_VARIANT}" >> "$UNINSTALLER"
+
+echo "rm -rf /usr/share/lintian/overrides/wine-${WINE_VARIANT-amd64}" \
+     >> "$UNINSTALLER"
+
+echo "" >> "$UNINSTALLER"
+
+echo "Done." >> "$UNINSTALLER"
+echo "" >> "$UNINSTALLER"
+
+
+echo "Finished. Execute ${UNINSTALLER} to remove Wine."
+echo ""
+
+
+
+
+
+
+
+
+
+
+
+

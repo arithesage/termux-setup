@@ -44,7 +44,7 @@ then
 
     if ! [ "$?" == "0" ];
     then
-        abort "Some required wine32 dependencies failed to install."
+        abort "Some required dependencies failed to install."
     fi
 fi
 
@@ -111,11 +111,18 @@ fi
 if ! [ "$USE_CACHED_WINE" == "1" ];
 then
     echo "Cleaning old Wine downloads..."
-    rm $HOME/wine*.deb
+    rm $HOME/wine*.deb > /dev/null
 
 
+    echo ""
+    echo "Checking for updated APT sources.list..."
+    echo "----------------------------------------"
     wget -NP /etc/apt/sources.list.d/ $WINE_SOURCES_URL
-    echo "Added sources.list to APT database."  
+    
+    if [ "$?" == "0" ];
+    then
+        echo "Updated sources.list in APT database."
+    fi
 
 
     echo ""
@@ -191,11 +198,13 @@ echo "rm -rf /usr/share/doc/wine-${WINE_VARIANT}" >> "$UNINSTALLER"
 echo "rm -rf /usr/share/lintian/overrides/wine-${WINE_VARIANT-i386}" \
      >> "$UNINSTALLER"
 
+echo "" >> "$UNINSTALLER"
+
 echo "Done." >> "$UNINSTALLER"
 echo "" >> "$UNINSTALLER"
 
 
-echo "Finished."
+echo "Finished. Execute ${UNINSTALLER} to remove Wine."
 echo ""
 
 
