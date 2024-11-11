@@ -1,0 +1,27 @@
+#!/bin/bash
+
+if ! [ "$TERMUX_VERSION" == "" ];
+then
+    echo "This script is for Termux proot only."
+    exit 1
+fi
+
+
+if ! [ -f "$PREFIX/bin/screen" ];
+then
+    echo ""
+    echo "Installing screen..."
+    echo "--------------------"
+
+    pkg update
+    pkg install -y screen
+fi
+
+
+screen -dmS x11 "termux-x11 :0"
+
+if [ "$?" == "0" ];
+then
+    echo "X server running."
+    echo ""
+fi

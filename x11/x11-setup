@@ -54,7 +54,6 @@ then
 fi
 
 
-
 if ! [ -f "$HOME/.x11_environment" ];
 then
     cp "$HOME/termux-setup/x11/.x11_environment" "$HOME/"

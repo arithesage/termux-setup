@@ -110,8 +110,14 @@ then
 
     bexec_admin apt update
     bexec_admin apt upgrade -y
-    bexec_admin apt install -y dialog gpg wget
+    bexec_admin apt install -y dialog gpg mesa-utils wget
 fi
+
+
+echo "export DISPLAY=:0" >> \
+         "${BOX86_PROOT_PATH}/root/.environment"
+
+echo "source \$HOME/.environment" >> "$BOX86_PROOT_PATH/root/.bashrc"
 
 
 if ! [ -d "$BOX86_PROOT_PATH/home/$BOX86_PROOT_USER" ];
@@ -122,6 +128,12 @@ then
 
     bexec_admin useradd --create-home 
                 --shell /bin/bash $BOX86_PROOT_USER
+
+    echo "export DISPLAY=:0" >> \
+         "${BOX86_PROOT_PATH}/home/${BOX86_PROOT_USER}/.environment"
+
+    echo "source \$HOME/.environment" >> \
+         "${BOX86_PROOT_PATH}/home/${BOX86_PROOT_USER}/.bashrc"
 fi
 
 

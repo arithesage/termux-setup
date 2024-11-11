@@ -18,6 +18,18 @@ function abort
 
 
 
+if ! [ -f "$PREFIX/bin/termux-x11" ];
+then
+    abort "VirGL requires installing termux-x11 before."
+fi
+
+
+if [ -f "$PREFIX/lib/libvirglrenderer.so" ];
+then
+    abort "VirGL seems already installed."
+fi
+
+
 echo "Setting up VirGL..."
 echo "==================="
 
