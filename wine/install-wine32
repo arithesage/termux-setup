@@ -15,9 +15,9 @@ function abort
 }
 
 
-if [ "$TERMUX_VERSION" == "" ];
+if ! [ "$TERMUX_VERSION" == "" ] && [ "$ANDROID_DATA" == "" ];
 then
-    abort "This script is for Termux only."
+    abort "This script must be executed in a Termux proot environment."
 fi
 
 
@@ -32,7 +32,7 @@ WINE_GPG_URL="$WINE_BUILDS_URL/winehq.key"
 WINE_VARIANT="staging"
 
 
-if [ -f "/usr/bin/wine" ];
+if [ -f "/opt/wine-${WINE_VARIANT}/bin/wine" ];
 then
     abort "Wine (32 bits) is already installed."
 fi
