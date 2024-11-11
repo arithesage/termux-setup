@@ -148,14 +148,14 @@ echo "--------------"
 
 if ! [ "$USE_CACHED_WINE" == "1" ];
 then
-    dpkg-deb -x $(ls wine-${WINE_VARIANT}_*.deb) \
+    dpkg-deb -x $(ls wine-${WINE_VARIANT}_*i386.deb) \
             "/var/tmp/wine"
 
 
     dpkg-deb -x $(ls wine-${WINE_VARIANT}-i386*.deb) \
             "/var/tmp/wine"
 else
-    dpkg-deb -x $(ls $HOME/deb/wine-${WINE_VARIANT}_*.deb) \
+    dpkg-deb -x $(ls $HOME/deb/wine-${WINE_VARIANT}_*i386.deb) \
             "/var/tmp/wine"
 
 
@@ -176,10 +176,6 @@ mv /var/tmp/wine/usr/share/doc/wine-${WINE_VARIANT} /usr/share/doc/
 
 mv /var/tmp/wine/usr/share/lintian/overrides/wine-${WINE_VARIANT}-i386 \
    /usr/share/lintian/overrides/
-
-
-echo "export PATH=\$PATH:/opt/wine-${WINE_VARIANT}/bin" > $HOME/.wine_env
-cp $HOME/.wine_env /opt/wine-${WINE_VARIANT}/
 
 
 UNINSTALLER="$HOME/wine32-uninstaller"
