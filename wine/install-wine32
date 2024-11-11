@@ -110,10 +110,15 @@ fi
 
 if ! [ "$USE_CACHED_WINE" == "1" ];
 then
+    echo "Cleaning old Wine downloads..."
+    rm $HOME/wine*.deb
+
+
     wget -NP /etc/apt/sources.list.d/ $WINE_SOURCES_URL
-    echo "Added sources.list to APT database."
+    echo "Added sources.list to APT database."  
 
 
+    echo ""
     echo "Updating APT database..."
     echo "------------------------"
 
