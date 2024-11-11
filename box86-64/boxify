@@ -20,49 +20,42 @@ function boxify_exec
     EXEC=$1
     LAUNCHER=$2
     EXEC_FILENAME=$(basename $EXEC)
-    BOXIFIED_SCRIPTS_PATH="$HOME/.local/bin/boxify"
-
-    if ! [ -d "${BOXIFIED_SCRIPTS_PATH}" ];
+    
+    if [ "$SCRIPT_PATH" == "" ];
     then
-        mkdir -p "${BOXIFIED_SCRIPTS_PATH}"
-
-        if [ -f "$HOME/.environment" ];
-        then
-            echo "export PATH=\$PATH:${BOXIFIED_SCRIPTS_PATH}" >> "$HOME/.environment"
-        else
-            echo "export PATH=\$PATH:${BOXIFIED_SCRIPTS_PATH}" >> "$HOME/.bashrc"
-        fi
+        SCRIPT_PATH="/usr/local/bin/${EXEC_FILENAME}"
     fi
 
-    SCRIPT="${BOXIFIED_SCRIPTS_PATH}/${EXEC_FILENAME}"
-
-    if [ -f "$SCRIPT" ];
+    if [ -f "$SCRIPT_PATH" ];
     then
         echo "ERROR: Failed boxifing '${EXEC}'."
-        echo "       An script '${SCRIPT}' already exists."
+        echo "       An script named '${SCRIPT_PATH}' already exists."
         echo ""
         exit 1
     fi
 
-    echo "#!/bin/bash" > "$SCRIPT"
-    echo "" >> "$SCRIPT"
-    echo "${LAUNCHER} $EXEC \$*" >> "$SCRIPT"
-    echo "" >> "$SCRIPT"
+    echo "#!/bin/bash" > "$SCRIPT_PATH"
+    echo "" >> "$SCRIPT_PATH"
+    echo "${LAUNCHER} $EXEC \$*" >> "$SCRIPT_PATH"
+    echo "" >> "$SCRIPT_PATH"
 
-    chmod +x "$SCRIPT"
+    chmod +x "$SCRIPT_PATH"
 
-    echo "'${EXEC}' boxified with '${LAUNCHER}' in '${SCRIPT}'."
+    echo "'${EXEC}' boxified with '${LAUNCHER}' in '${SCRIPT_PATH}'."
     echo ""
 }
 
 
 function usage
 {
-    echo "Usage: boxify <executable file>"
+    echo "Usage: boxify <executable file> [script path]"
     echo ""
     echo "Creates an script in /usr/local/bin that executes the file"
     echo "with Box86 or Box64, depending of the architecture of the"
     echo "executable."
+    echo ""
+    echo "If an script path is given, it will be used instead"
+    echo "/usr/local/bin/{executable file}."
     echo ""
 }
 
@@ -77,6 +70,7 @@ fi
 
 
 EXEC=$1
+export SCRIPT_PATH=$2
 FILE_TYPE=$(file -L "$EXEC")
 
 echo ${FILE_TYPE} | grep "ELF 32-bit" > /dev/null

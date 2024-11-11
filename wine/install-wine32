@@ -61,12 +61,6 @@ then
 fi
 
 
-if ! [ -d "/etc/apt/keyrings" ];
-then
-    mkdir "/etc/apt/keyrings"
-fi
-
-
 echo -n "Checking if Wine site is available..."
 curl -s https://dl.winehq.org > /dev/null
 
@@ -89,20 +83,29 @@ then
 fi
 
 
-if ! [ "$USE_CACHED_WINE" == "1" ];
+if ! [ -f "/etc/apt/keyrings/winehq-archive.key" ];
 then
-    wget -O /etc/apt/keyrings/winehq-archive.key $WINE_GPG_URL
-else
-    cp "$HOME/deb/winehq.key" /etc/apt/keyrings/
+    if ! [ -d "/etc/apt/keyrings" ];
+    then
+        mkdir "/etc/apt/keyrings"
+    fi
+
+
+    if ! [ "$USE_CACHED_WINE" == "1" ];
+    then
+        wget -O /etc/apt/keyrings/winehq-archive.key $WINE_GPG_URL
+    else
+        cp "$HOME/deb/winehq.key" /etc/apt/keyrings/
+    fi
+
+
+    if ! [ "$?" == "0" ];
+    then
+        abort "Failed adding GPG key."
+    fi
+
+    echo "Added GPG key to keyrings."
 fi
-
-
-if ! [ "$?" == "0" ];
-then
-    abort "Failed adding GPG key."
-fi
-
-echo "Added GPG key to keyrings."
 
 
 if ! [ "$USE_CACHED_WINE" == "1" ];
