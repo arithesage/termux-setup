@@ -23,13 +23,28 @@ fi
 
 
 
+DEFAULT_WINE_VARIANT="staging"
+DEFAULT_WINE_VERSION="8.0.0"
+
+WINE_VARIANT=$1
+WINE_VERSION=$2
+
+if [ "$WINE_VARIANT" == "" ];
+then
+    WINE_VARIANT=$DEFAULT_WINE_VARIANT
+fi
+
+if [ "$WINE_VERSION" == "" ];
+then
+    WINE_VERSION=$DEFAULT_WINE_VERSION
+fi
+
+
 WINE_BUILDS_URL="https://dl.winehq.org/wine-builds"
 DEBIAN_OLDSTABLE_BUILDS_URL="$WINE_BUILDS_URL/debian/dists/bullseye"
 
 WINE_SOURCES_URL="$DEBIAN_OLDSTABLE_BUILDS_URL/winehq-bullseye.sources"
 WINE_GPG_URL="$WINE_BUILDS_URL/winehq.key"
-
-WINE_VARIANT="staging"
 
 
 if [ -f "/opt/wine-${WINE_VARIANT}/bin/wine64" ];
@@ -133,11 +148,11 @@ then
 
 
     echo ""
-    echo "Downloading wine..."
-    echo "-------------------"
+    echo "Downloading wine-${WINE_VARIANT} (${WINE_VERSION})..."
+    echo "-----------------------------------------------------"
 
-    apt download wine-$WINE_VARIANT:amd64
-    apt download wine-$WINE_VARIANT-amd64
+    apt download wine-$WINE_VARIANT:amd64=$WINE_VERSION~bullseye-1
+    apt download wine-$WINE_VARIANT-amd64:$WINE_VERSION~bullseye-1
 fi
 
 

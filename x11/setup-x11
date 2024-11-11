@@ -46,12 +46,15 @@ echo "Installing 'termux-x11' ..."
 echo "==========================="
 
 pkg update
-pkg install -y termux-x11
+pkg install -y screen termux-x11
 
 if ! [ "$?" == "0" ];
 then
     abort "Failed!"
 fi
+
+
+cp "$HOME/termux-setup/x11/enable_x11" "$HOME/scripts/"
 
 
 if ! [ -f "$HOME/.x11_environment" ];
