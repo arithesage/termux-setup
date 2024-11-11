@@ -1,0 +1,129 @@
+#!/bin/bash
+
+function abort
+{
+    REASON=$1
+
+    if [ "$REASON" == "" ];
+    then
+        echo $REASON
+    fi
+
+    echo ""
+    
+    exit 1
+}
+
+
+if ! [ "$TERMUX_VERSION" == "" ] && [ "$ANDROID_DATA" == "" ];
+then
+    abort "This script must be executed in a Termux proot environment."
+fi
+
+
+if ! [ -f "/opt/wine-staging/bin/wineboot" ];
+then
+    abort "Wine not detected."
+fi
+
+
+if [ -f "/opt/wine-staging/bin/wineboot-x86" ];
+then
+    abort "Wine has been boxified already."
+fi
+
+
+if [ -f "/opt/wine-staging/bin/widl" ];
+then
+    mv /opt/wine-staging/bin/widl /opt/wine-staging/bin/widl-x86
+    boxify /opt/wine-staging/bin/widl-x86 /opt/wine-staging/bin/widl
+fi
+
+
+if [ -f "/opt/wine-staging/bin/wine" ];
+then
+    mv /opt/wine-staging/bin/wine /opt/wine-staging/bin/wine-x86
+    boxify /opt/wine-staging/bin/wine-x86 /opt/wine-staging/bin/wine
+fi
+
+
+if [ -f "/opt/wine-staging/bin/wine64" ];
+then
+    mv /opt/wine-staging/bin/wine64 /opt/wine-staging/bin/wine64-x86
+    boxify /opt/wine-staging/bin/wine64-x86 /opt/wine-staging/bin/wine
+fi
+
+
+if [ -f "/opt/wine-staging/bin/wine64-preloader" ];
+then
+    mv /opt/wine-staging/bin/wine64-preloader \
+       /opt/wine-staging/bin/wine64-preloader-x86
+
+    boxify /opt/wine-staging/bin/wine64-preloader-x86 \
+           /opt/wine-staging/bin/wine64-preloader
+fi
+
+
+if [ -f "/opt/wine-staging/bin/wrc" ];
+then
+    mv /opt/wine-staging/bin/wrc /opt/wine-staging/bin/wrc-x86
+    boxify /opt/wine-staging/bin/wrc-x86 /opt/wine-staging/bin/wrc
+fi
+
+
+
+if [ -f "/opt/wine-staging/bin/wmc" ];
+then
+    mv /opt/wine-staging/bin/wmc /opt/wine-staging/bin/wmc-x86
+    boxify /opt/wine-staging/bin/wmc-x86 /opt/wine-staging/bin/wmc
+fi
+
+
+if [ -f "/opt/wine-staging/bin/wineserver" ];
+then
+    mv /opt/wine-staging/bin/wineserver \
+       /opt/wine-staging/bin/wineserver-x86
+
+    boxify /opt/wine-staging/bin/wineserver-x86 \
+           /opt/wine-staging/bin/wineserver
+fi
+
+
+if [ -f "/opt/wine-staging/bin/wine-preloader" ];
+then
+    mv /opt/wine-staging/bin/wine-preloader \
+       /opt/wine-staging/bin/wine-preloader-x86
+
+    boxify /opt/wine-staging/bin/wine-preloader-x86 \
+           /opt/wine-staging/bin/wine-preloader
+fi
+
+
+if [ -f "/opt/wine-staging/bin/winegcc" ];
+then
+    mv /opt/wine-staging/bin/winegcc /opt/wine-staging/bin/winegcc-x86
+    boxify /opt/wine-staging/bin/winegcc-x86 /opt/wine-staging/bin/winegcc
+fi
+
+
+if [ -f "/opt/wine-staging/bin/winedump" ];
+then
+    mv /opt/wine-staging/bin/winedump /opt/wine-staging/bin/winedump-x86
+    boxify /opt/wine-staging/bin/winedump-x86 /opt/wine-staging/bin/winedump
+fi
+
+
+if [ -f "/opt/wine-staging/bin/winebuild" ];
+then
+    mv /opt/wine-staging/bin/winebuild /opt/wine-staging/bin/winebuild-x86
+    boxify /opt/wine-staging/bin/winebuild-x86 /opt/wine-staging/bin/winebuild
+fi
+
+
+ln -sf /opt/wine-staging/bin/winegcc /opt/wine-staging/winecpp
+ln -sf /opt/wine-staging/bin/winegcc /opt/wine-staging/wineg++
+
+ln -sf /opt/wine-staging/bin/wine /usr/local/bin/wine
+ln -sf /opt/wine-staging/bin/wine64 /usr/local/bin/wine64
+ln -sf /opt/wine-staging/bin/wineboot /usr/local/bin/wineboot
+ln -sf /opt/wine-staging/bin/winecfg /usr/local/bin/winecfg
