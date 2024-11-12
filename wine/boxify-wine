@@ -55,15 +55,18 @@ then
 fi
 
 
-echo "Boxifying every Wine executable (not scripts) ..."
-echo "-------------------------------------------------"
+echo "Boxifying Wine installation at ${WINE_PATH} ..."
+echo "-----------------------------------------------"
 
 while IFS= read -r filename;
 do
     if [ -f "${WINE_PATH}/bin/${filename}" ];
     then
-        boxify "${WINE_PATH}/bin/${filename}" \
-               "${WINE_PATH}/bin/${filename}-x86"
+        mv "${WINE_PATH}/bin/${filename}" \
+           "${WINE_PATH}/bin/${filename}-x86"
+        
+        boxify "${WINE_PATH}/bin/${filename}-86" \
+               "${WINE_PATH}/bin/${filename}"
     fi
 done < $HOME/wine-binaries
 
