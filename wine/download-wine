@@ -165,7 +165,7 @@ echo "Downloading wine-${WINE_BRANCH} (${WINE_VERSION})..."
 echo "-----------------------------------------------------"
 
 apt download wine-${WINE_BRANCH}:${ARCH}=${WINE_VERSION}~${DISTRO_CODENAME}-1
-apt download wine-${WINE_BRANCH}-${ARCH}:${WINE_VERSION}~${DISTRO_CODENAME}-1
+apt download wine-${WINE_BRANCH}-${ARCH}=${WINE_VERSION}~${DISTRO_CODENAME}-1
 
 
 if ! [ "$?" == "0" ];
