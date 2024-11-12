@@ -75,13 +75,8 @@ echo "---------------------"
 ln -sf "${WINE_PATH}/bin/winegcc" "${WINE_PATH}/bin/winecpp"
 ln -sf "${WINE_PATH}/bin/winegcc" "${WINE_PATH}/bin/wineg++"
 
-ln -sf "${WINE_PATH}/bin/wine" /usr/local/bin/wine
 
-if [ -f "${WINE_PATH}/bin/wine64" ];
-then
-    ln -sf "${WINE_PATH}/bin/wine64" /usr/local/bin/wine64
-fi
+echo "Done. Execute switch-wine ${WINE_PATH} to use this installation."
+echo ""
 
-ln -sf "${WINE_PATH}/bin/wineboot" /usr/local/bin/wineboot
-ln -sf "${WINE_PATH}/bin/winecfg" /usr/local/bin/winecfg
 

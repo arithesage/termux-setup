@@ -1,0 +1,62 @@
+#!/bin/bash
+
+function abort
+{
+    REASON=$1
+
+    if [ "$REASON" == "" ];
+    then
+        echo $REASON
+    fi
+
+    echo ""
+    
+    exit 1
+}
+
+
+function usage
+{
+    echo "Usage: switch-wine <Wine path>"
+    echo "Update the /usr/local/bin symlinks to use another Wine installation."
+    echo ""
+}
+
+
+if ! [ "$TERMUX_VERSION" == "" ] && [ "$ANDROID_DATA" == "" ];
+then
+    abort "This script must be executed in a Termux proot environment."
+fi
+
+
+if [ "$1" == "" ] || [ "$1" == "" ] || [ "$1" == "" ];
+then
+    usage
+    abort
+fi
+
+
+WINE_PATH=$1
+
+
+if ! [ -f "${WINE_PATH}/bin/wineboot" ];
+then
+    abort "Wine not detected '$WINE_PATH'."
+fi
+
+
+ln -sf "${WINE_PATH}/bin/wine" /usr/local/bin/wine
+
+if [ -f "${WINE_PATH}/bin/wine64" ];
+then
+    ln -sf "${WINE_PATH}/bin/wine64" /usr/local/bin/wine64
+fi
+
+ln -sf "${WINE_PATH}/bin/wineboot" /usr/local/bin/wineboot
+ln -sf "${WINE_PATH}/bin/winecfg" /usr/local/bin/winecfg
+
+
+echo "Using now Wine installation at ${WINE_PATH}."
+echo ""
+
+
