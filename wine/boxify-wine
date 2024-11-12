@@ -15,115 +15,73 @@ function abort
 }
 
 
+function usage
+{
+    echo "Usage: boxify-wine <Wine path>"
+    echo ""
+    echo "Create an script for every Wine executable that calls"
+    echo "Box86 or Box64, depending of the executable architecture."
+    echo ""
+}
+
+
 if ! [ "$TERMUX_VERSION" == "" ] && [ "$ANDROID_DATA" == "" ];
 then
     abort "This script must be executed in a Termux proot environment."
 fi
 
 
-if ! [ -f "/opt/wine-staging/bin/wineboot" ];
+if [ "$1" == "" ] || [ "$1" == "" ] || [ "$1" == "" ];
 then
-    abort "Wine not detected."
-fi
-
-
-if [ -f "/opt/wine-staging/bin/wineboot-x86" ];
-then
-    abort "Wine has been boxified already."
-fi
-
-
-if [ -f "/opt/wine-staging/bin/widl" ];
-then
-    mv /opt/wine-staging/bin/widl /opt/wine-staging/bin/widl-x86
-    boxify /opt/wine-staging/bin/widl-x86 /opt/wine-staging/bin/widl
-fi
-
-
-if [ -f "/opt/wine-staging/bin/wine" ];
-then
-    mv /opt/wine-staging/bin/wine /opt/wine-staging/bin/wine-x86
-    boxify /opt/wine-staging/bin/wine-x86 /opt/wine-staging/bin/wine
-fi
-
-
-if [ -f "/opt/wine-staging/bin/wine64" ];
-then
-    mv /opt/wine-staging/bin/wine64 /opt/wine-staging/bin/wine64-x86
-    boxify /opt/wine-staging/bin/wine64-x86 /opt/wine-staging/bin/wine
-fi
-
-
-if [ -f "/opt/wine-staging/bin/wine64-preloader" ];
-then
-    mv /opt/wine-staging/bin/wine64-preloader \
-       /opt/wine-staging/bin/wine64-preloader-x86
-
-    boxify /opt/wine-staging/bin/wine64-preloader-x86 \
-           /opt/wine-staging/bin/wine64-preloader
-fi
-
-
-if [ -f "/opt/wine-staging/bin/wrc" ];
-then
-    mv /opt/wine-staging/bin/wrc /opt/wine-staging/bin/wrc-x86
-    boxify /opt/wine-staging/bin/wrc-x86 /opt/wine-staging/bin/wrc
+    usage
+    abort
 fi
 
 
 
-if [ -f "/opt/wine-staging/bin/wmc" ];
+
+WINE_PATH=$1
+
+
+if ! [ -f "${WINE_PATH}/bin/wineboot" ];
 then
-    mv /opt/wine-staging/bin/wmc /opt/wine-staging/bin/wmc-x86
-    boxify /opt/wine-staging/bin/wmc-x86 /opt/wine-staging/bin/wmc
+    abort "Wine not detected '$WINE_PATH'."
 fi
 
 
-if [ -f "/opt/wine-staging/bin/wineserver" ];
+if [ -f "${WINE_PATH}/bin/wineboot-x86" ];
 then
-    mv /opt/wine-staging/bin/wineserver \
-       /opt/wine-staging/bin/wineserver-x86
-
-    boxify /opt/wine-staging/bin/wineserver-x86 \
-           /opt/wine-staging/bin/wineserver
+    abort "This Wine installation has been boxified already."
 fi
 
 
-if [ -f "/opt/wine-staging/bin/wine-preloader" ];
-then
-    mv /opt/wine-staging/bin/wine-preloader \
-       /opt/wine-staging/bin/wine-preloader-x86
+echo "Boxifying every Wine executable (not scripts) ..."
+echo "-------------------------------------------------"
 
-    boxify /opt/wine-staging/bin/wine-preloader-x86 \
-           /opt/wine-staging/bin/wine-preloader
+while IFS= read -r filename;
+do
+    if [ -f "${WINE_PATH}/bin/${filename}" ];
+    then
+        boxify "${WINE_PATH}/bin/${filename}" \
+               "${WINE_PATH}/bin/${filename}-x86"
+    fi
+done < $HOME/wine-binaries
+
+
+echo ""
+echo "Updating symlinks ..."
+echo "---------------------" 
+
+ln -sf "${WINE_PATH}/bin/winegcc" "${WINE_PATH}/bin/winecpp"
+ln -sf "${WINE_PATH}/bin/winegcc" "${WINE_PATH}/bin/wineg++"
+
+ln -sf "${WINE_PATH}/bin/wine" /usr/local/bin/wine
+
+if [ -f "${WINE_PATH}/bin/wine64" ];
+then
+    ln -sf "${WINE_PATH}/bin/wine64" /usr/local/bin/wine64
 fi
 
+ln -sf "${WINE_PATH}/bin/wineboot" /usr/local/bin/wineboot
+ln -sf "${WINE_PATH}/bin/winecfg" /usr/local/bin/winecfg
 
-if [ -f "/opt/wine-staging/bin/winegcc" ];
-then
-    mv /opt/wine-staging/bin/winegcc /opt/wine-staging/bin/winegcc-x86
-    boxify /opt/wine-staging/bin/winegcc-x86 /opt/wine-staging/bin/winegcc
-fi
-
-
-if [ -f "/opt/wine-staging/bin/winedump" ];
-then
-    mv /opt/wine-staging/bin/winedump /opt/wine-staging/bin/winedump-x86
-    boxify /opt/wine-staging/bin/winedump-x86 /opt/wine-staging/bin/winedump
-fi
-
-
-if [ -f "/opt/wine-staging/bin/winebuild" ];
-then
-    mv /opt/wine-staging/bin/winebuild /opt/wine-staging/bin/winebuild-x86
-    boxify /opt/wine-staging/bin/winebuild-x86 /opt/wine-staging/bin/winebuild
-fi
-
-
-ln -sf /opt/wine-staging/bin/winegcc /opt/wine-staging/winecpp
-ln -sf /opt/wine-staging/bin/winegcc /opt/wine-staging/wineg++
-
-ln -sf /opt/wine-staging/bin/wine /usr/local/bin/wine
-ln -sf /opt/wine-staging/bin/wine64 /usr/local/bin/wine64
-ln -sf /opt/wine-staging/bin/wineboot /usr/local/bin/wineboot
-ln -sf /opt/wine-staging/bin/winecfg /usr/local/bin/winecfg
