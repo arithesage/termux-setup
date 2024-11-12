@@ -118,7 +118,7 @@ else
 fi
 
 
-if ! [ "$WINE_URL_OK" == "" ];
+if ! [ "$WINE_URL_OK" == "1" ];
 then
     abort "Can't download Wine."
 fi
