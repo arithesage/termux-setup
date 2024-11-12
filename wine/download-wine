@@ -17,7 +17,7 @@ function abort
 
 function usage
 {
-    echo "Usage: download-wine <branch> <version> [architecture] [out dir]"
+    echo "Usage: download-wine <branch> <version> [i386|amd64] [out dir]"
     echo ""
     echo "Branch is one of these: stable, devel or staging."
     echo ""
@@ -27,7 +27,7 @@ function usage
 }
 
 
-if [ "$1" == "" ] || [ "$?" == "-h" ] || [ "$1" == "--help" ];
+if [ "$1" == "" ] || [ "$1" == "-h" ] || [ "$1" == "--help" ];
 then
     usage
     abort
@@ -49,16 +49,17 @@ fi
 
 if [ "$ARCH" == "" ];
 then
+    echo "No architecture provided. Checking this machine one..."
+    echo ""
+
     ARCH=$(uname -m)
+fi
 
-    if [ "$ARCH" == "aarch64" ];
-    then
-        ARCH="arm64"
 
-    elif [[ $ARCH == armv* ]];
-    then
-        ARCH="armhf"
-    fi
+if ! [ "$ARCH" == "i386" ] && ! [ "$ARCH" == "amd64" ];
+then
+    echo "Invalid architecture '${ARCH}'."
+    abort "Only i386 and amd64 architectures are valid."
 fi
 
 
@@ -81,6 +82,13 @@ DEBIAN_BUILDS_URL="${WINE_BUILDS_URL}/debian/dists/${DISTRO_CODENAME}"
 
 WINE_SOURCES_URL="$DEBIAN_BUILDS_URL/winehq-${DISTRO_CODENAME}.sources"
 WINE_GPG_URL="$WINE_BUILDS_URL/winehq.key"
+
+
+if [ "$WINE_VERSION" == "" ];
+then
+    echo "You must specify a version to download."
+    abort "Check available ones in ${DEBIAN_BUILDS_URL}/main/binary-${ARCH}."
+fi
 
 
 if ! [ "$DOWNLOAD_DIR" == "" ];
