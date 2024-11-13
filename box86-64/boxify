@@ -22,7 +22,7 @@ function boxify_exec
     EXEC_FILENAME=$(basename $EXEC)
     EXEC_PATH=$(dirname $EXEC)
     SCRIPT_PATH=$EXEC
-    TRUE_EXEC=$EXEC_PATH/${EXEC_FILENAME}_x86
+    TRUE_EXEC=$(realpath $EXEC_PATH/${EXEC_FILENAME}_x86)
 
     touch "$EXEC_PATH/permission_test"
 
