@@ -51,10 +51,6 @@ then
 fi
 
 
-BOXIFIED_EXEC_FILENAME=$(basename $BOXIFIED_EXEC)
-BOXIFIED_EXEC_PATH=$(dirname $BOXIFIED_EXEC)
-
-
 rm $BOXIFIED_EXEC
 
 if ! [ "$?" == "0" ];
@@ -63,7 +59,7 @@ then
 fi
 
 
-mv "${TRUE_EXEC}" "${BOXIFIED_EXEC_PATH}/${BOXIFIED_EXEC_FILENAME}"
+mv "$TRUE_EXEC" "$BOXIFIED_EXEC"
 
 echo "Done."
 echo ""
