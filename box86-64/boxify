@@ -21,24 +21,39 @@ function boxify_exec
     LAUNCHER=$2
     EXEC_FILENAME=$(basename $EXEC)
     EXEC_PATH=$(dirname $EXEC)
-    SCRIPT_PATH=$EXEC_PATH/${EXEC_FILENAME}_x86
+    SCRIPT_PATH=$EXEC
+    TRUE_EXEC=$EXEC_PATH/${EXEC_FILENAME}_x86
 
-    if [ -f "$SCRIPT_PATH" ];
+    touch "$EXEC_PATH/permission_test"
+
+    if ! [ "$?" == "0" ];
     then
-        echo "ERROR: Failed boxifing '$EXEC'."
-        echo "       An script named '$SCRIPT_PATH' already exists."
-        echo ""
-        exit 1
+        abort "You have not write permission in '$EXEC_PATH'."
     fi
+
+    rm "$EXEC_PATH/permission_test"
+
+
+    if [ -f "$TRUE_EXEC" ];
+    then
+        echo "ERROR: Failed boxifying '$EXEC'."
+        echo "A file '$TRUE_EXEC' already exists."
+        echo ""
+        abort
+    fi
+
+
+    mv "$EXEC" "$TRUE_EXEC"    
 
     echo "#!/bin/bash" > "$SCRIPT_PATH"
     echo "" >> "$SCRIPT_PATH"
-    echo "$LAUNCHER $EXEC \$*" >> "$SCRIPT_PATH"
+    echo "$LAUNCHER $TRUE_EXEC \$*" >> "$SCRIPT_PATH"
     echo "" >> "$SCRIPT_PATH"
 
     chmod +x "$SCRIPT_PATH"
 
-    echo "'$EXEC' boxified with '$LAUNCHER' in '$SCRIPT_PATH'."
+
+    echo "'$EXEC' boxified with '$LAUNCHER'."
     echo ""
 }
 
@@ -48,7 +63,8 @@ function usage
     echo "Usage: boxify <executable file>"
     echo ""
     echo "Creates an script in the executable path with the same name"
-    echo "as the executable, but adding _x86 to the filename."
+    echo "as the executable. The original executable is renamed"
+    echo "adding adding _x86 to its filename."
     echo ""
     echo "The script will run the executable calling Box86 or Box64,"
     echo "depending of the executable architecture."
@@ -59,7 +75,7 @@ function usage
 if [ "$1" == "" ] || [ "$1" == "-h" ] || [ "$1" == "--help" ];
 then
     usage
-    exit 1
+    abort
 fi
 
 
@@ -96,9 +112,6 @@ then
     fi
 
 else
-    echo "The file '${EXEC}' isn't an Linux x86 or x86_64 executable."
-    echo ""
-
-    exit 1
+    abort "The file '${EXEC}' isn't an Linux x86 or x86_64 executable."    
 fi
 
