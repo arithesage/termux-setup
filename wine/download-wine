@@ -17,7 +17,7 @@ function abort
 
 function usage
 {
-    echo "Usage: download-wine <branch> <version> [i386|amd64] [out dir]"
+    echo "Usage: download-wine <branch> <version> [i386|amd64|both] [out dir]"
     echo ""
     echo "Branch is one of these: stable, devel or staging."
     echo ""
@@ -56,10 +56,11 @@ then
 fi
 
 
-if ! [ "$ARCH" == "i386" ] && ! [ "$ARCH" == "amd64" ];
+if ! [ "$ARCH" == "i386" ] && ! [ "$ARCH" == "amd64" ] && \
+   ! [ "$WINE_BRANCH" == "both" ];
 then
-    echo "Invalid architecture '${ARCH}'."
-    abort "Only i386 and amd64 architectures are valid."
+    echo "Invalid architecture value '${ARCH}'."
+    abort "Only i386, amd64 or both are valid."
 fi
 
 
@@ -95,15 +96,13 @@ if ! [ "$DOWNLOAD_DIR" == "" ];
 then
     WINE_DOWNLOAD_DIR="$DOWNLOAD_DIR"
 else
-    WINE_DOWNLOAD_DIR="/var/tmp/wine-pkgs"
+    WINE_DOWNLOAD_DIR="/var/tmp/wine-pkgs/${WINE_VERSION}"
 fi
 
 if ! [ -d "${WINE_DOWNLOAD_DIR}" ];
 then
     mkdir -p "${WINE_DOWNLOAD_DIR}"
 fi
-
-cd $WINE_DOWNLOAD_DIR
 
 
 echo -n "Checking if Wine site is available..."
@@ -164,8 +163,46 @@ echo ""
 echo "Downloading wine-${WINE_BRANCH} (${WINE_VERSION})..."
 echo "-----------------------------------------------------"
 
-apt download wine-${WINE_BRANCH}:${ARCH}=${WINE_VERSION}~${DISTRO_CODENAME}-1
-apt download wine-${WINE_BRANCH}-${ARCH}=${WINE_VERSION}~${DISTRO_CODENAME}-1
+cd $WINE_DOWNLOAD_DIR
+
+if ! [ "$ARCH" == "both" ];
+then
+    apt download wine-${WINE_BRANCH}:${ARCH}=\
+        ${WINE_VERSION}~${DISTRO_CODENAME}-1
+
+    apt download wine-${WINE_BRANCH}-${ARCH}=\
+        ${WINE_VERSION}~${DISTRO_CODENAME}-1
+
+else
+    apt download wine-${WINE_BRANCH}:i386=\
+        ${WINE_VERSION}~${DISTRO_CODENAME}-1
+
+    apt download wine-${WINE_BRANCH}-i386=\
+        ${WINE_VERSION}~${DISTRO_CODENAME}-1
+
+    apt download wine-${WINE_BRANCH}:amd64=\
+        ${WINE_VERSION}~${DISTRO_CODENAME}-1
+
+    apt download wine-${WINE_BRANCH}-amd64=\
+        ${WINE_VERSION}~${DISTRO_CODENAME}-1
+fi
+
+
+echo "#!/bin/bash" > "$PWD/extract"
+echo "" >> "$PWD/extract"
+
+echo "echo \"Extracting Wine in /var/tmp/wine-${WINE_VERSION} ...\"" \
+      >> "$PWD/extract"
+
+echo "for package in *;" >> "$PWD/extract"
+echo "do" >> "$PWD/extract"
+
+echo "    dpkg-deb -x \$package /var/tmp/wine-${WINE_VERSION}" \
+     >> "$PWD/extract"
+
+echo "done" >> "$PWD/extract"
+echo "echo \"Done.\"" >> "$PWD/extract"
+
 
 
 if ! [ "$?" == "0" ];
