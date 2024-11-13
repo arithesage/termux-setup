@@ -20,42 +20,38 @@ function boxify_exec
     EXEC=$1
     LAUNCHER=$2
     EXEC_FILENAME=$(basename $EXEC)
-    
-    if [ "$SCRIPT_PATH" == "" ];
-    then
-        SCRIPT_PATH="/usr/local/bin/${EXEC_FILENAME}"
-    fi
+    EXEC_PATH=$(dirname $EXEC)
+    SCRIPT_PATH=$EXEC_PATH/${EXEC_FILENAME}_x86
 
     if [ -f "$SCRIPT_PATH" ];
     then
-        echo "ERROR: Failed boxifing '${EXEC}'."
-        echo "       An script named '${SCRIPT_PATH}' already exists."
+        echo "ERROR: Failed boxifing '$EXEC'."
+        echo "       An script named '$SCRIPT_PATH' already exists."
         echo ""
         exit 1
     fi
 
     echo "#!/bin/bash" > "$SCRIPT_PATH"
     echo "" >> "$SCRIPT_PATH"
-    echo "${LAUNCHER} $EXEC \$*" >> "$SCRIPT_PATH"
+    echo "$LAUNCHER $EXEC \$*" >> "$SCRIPT_PATH"
     echo "" >> "$SCRIPT_PATH"
 
     chmod +x "$SCRIPT_PATH"
 
-    echo "'${EXEC}' boxified with '${LAUNCHER}' in '${SCRIPT_PATH}'."
+    echo "'$EXEC' boxified with '$LAUNCHER' in '$SCRIPT_PATH'."
     echo ""
 }
 
 
 function usage
 {
-    echo "Usage: boxify <executable file> [script path]"
+    echo "Usage: boxify <executable file>"
     echo ""
-    echo "Creates an script in /usr/local/bin that executes the file"
-    echo "with Box86 or Box64, depending of the architecture of the"
-    echo "executable."
+    echo "Creates an script in the executable path with the same name"
+    echo "as the executable, but adding _x86 to the filename."
     echo ""
-    echo "If an script path is given, it will be used instead"
-    echo "/usr/local/bin/{executable file}."
+    echo "The script will run the executable calling Box86 or Box64,"
+    echo "depending of the executable architecture."
     echo ""
 }
 
@@ -70,7 +66,6 @@ fi
 
 
 EXEC=$1
-export SCRIPT_PATH=$2
 FILE_TYPE=$(file -L "$EXEC")
 
 echo ${FILE_TYPE} | grep "ELF 32-bit" > /dev/null

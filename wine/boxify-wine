@@ -65,8 +65,7 @@ do
         mv "${WINE_PATH}/bin/${filename}" \
            "${WINE_PATH}/bin/${filename}-x86"
         
-        boxify "${WINE_PATH}/bin/${filename}-x86" \
-               "${WINE_PATH}/bin/${filename}"
+        boxify "${WINE_PATH}/bin/${filename}"
     fi
 done < $HOME/wine-binaries
 
