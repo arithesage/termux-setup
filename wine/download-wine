@@ -214,9 +214,15 @@ echo "    dpkg-deb -x \$package /var/tmp/wine-${WINE_VERSION}" \
      >> "$PWD/extract"
 
 echo "done" >> "$PWD/extract"
+echo "" >> "$PWD/extract"
+echo "echo \"\"">> "$PWD/extract"
 echo "echo \"Done.\"" >> "$PWD/extract"
+echo "echo \"\"" >> "$PWD/extract"
+
+chmod +x "$PWD/extract"
 
 
+echo ""
 echo "Done."
 echo ""
 
