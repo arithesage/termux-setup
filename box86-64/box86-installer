@@ -15,9 +15,17 @@ function abort
 }
 
 
-if ! [ "$TERMUX_VERSION" == "" ] && [ "$ANDROID_DATA" == "" ];
+if ! [ "$TERMUX_VERSION" == "" ];
 then
-    abort "This script must be executed in a Termux proot environment."
+    abort "This script isn't for Termux."
+fi
+
+
+sudo -v
+
+if ! [ "$?" == "0" ];
+then
+    abort "You need to be root, or have sudo permissions."
 fi
 
 
@@ -74,7 +82,7 @@ echo "==================="
 
 if [ "$DISTRO_NAME" == "ubuntu" ];
 then
-    cp -f "$HOME/apt/fixed-ubuntu_sources.list" /etc/apt/sources.list
+    sudo cp -f "$HOME/apt/fixed-ubuntu_sources.list" /etc/apt/sources.list
 fi
 
 
@@ -83,9 +91,9 @@ then
     echo "Installing needed packages ..."
     echo "------------------------------"
 
-    apt update
-    apt install -y dialog
-    apt install -y gpg python3 python-is-python3 wget
+    sudo apt update
+    sudo apt install -y dialog
+    sudo apt install -y gpg python3 python-is-python3 wget
 
     echo ""
 fi
@@ -93,7 +101,7 @@ fi
 
 if ! [ -d "/usr/share/keyrings" ];
 then
-    make -p "/usr/share/keyrings"
+    sudo mkdir -p "/usr/share/keyrings"
 fi
 
 
@@ -167,17 +175,17 @@ then
     if ! [ "$USED_CACHED_BOX86" == "1"];
     then
         wget -qO- "$BOX86_GPG_URL" | \
-        gpg --dearmor -o "/usr/share/keyrings/box86.gpg"
+        sudo gpg --dearmor -o "/usr/share/keyrings/box86.gpg"
     else
         ls "$HOME/deb/*.gpg" | \
-        gpg --dearmor -o "/usr/share/keyrings/box86.gpg"
+        sudo gpg --dearmor -o "/usr/share/keyrings/box86.gpg"
     fi
 
     if ! [ "$?" == "0" ];
     then
         if [ -f "/usr/share/keyrings/box86.gpg" ];
         then
-            rm /usr/share/keyrings/box86.gpg
+            sudo rm /usr/share/keyrings/box86.gpg
         fi
 
         abort "Could not intall Box86 GPG key."
@@ -200,22 +208,22 @@ then
         echo "Signed-By: /usr/share/keyrings/box86.gpg" \
         >> /var/tmp/box86.sources
 
-        mv /var/tmp/box86.sources /etc/apt/sources.list.d/
+        sudo mv /var/tmp/box86.sources /etc/apt/sources.list.d/
 
         echo "Added sources list for APT."
     fi
 fi
 
 
-dpkg --add-architecture armhf
-dpkg --add-architecture i386
+sudo dpkg --add-architecture armhf
+sudo dpkg --add-architecture i386
 
 echo "Enabled armhf and i386 architectures in dpkg."
 
 
 if [ "$DISTRO_NAME" == "ubuntu" ];
 then
-    cp "$HOME/apt/ubuntu-i386.list" /etc/apt/sources.list.d/
+    sudo cp "$HOME/apt/ubuntu-i386.list" /etc/apt/sources.list.d/
 fi
 
 
@@ -223,14 +231,14 @@ echo ""
 echo "Updating APT sources..."
 echo "-----------------------"
 
-apt update
+sudo apt update
 
 
 echo ""
 echo "Installing libc6 and ${BOX86} ..."
 echo "--------------------------------------"
 
-apt install -y libc6:armhf
+sudo apt install -y libc6:armhf
 
 if ! [ "$?" == "0" ];
 then
@@ -241,9 +249,9 @@ fi
 
 if ! [ "$USE_CACHED_BOX86"=="1" ];
 then
-    apt install -y ${BOX86}
+    sudo apt install -y ${BOX86}
 else
-    dpkg -i $(ls deb/box86*.deb)
+    sudo dpkg -i $(ls deb/box86*.deb)
 fi
 
 if ! [ "$?" == "0" ];

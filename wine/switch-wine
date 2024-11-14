@@ -23,9 +23,17 @@ function usage
 }
 
 
-if ! [ "$TERMUX_VERSION" == "" ] && [ "$ANDROID_DATA" == "" ];
+if ! [ "$TERMUX_VERSION" == "" ];
 then
-    abort "This script must be executed in a Termux proot environment."
+    abort "This script isn't for Termux."
+fi
+
+
+sudo -v
+
+if ! [ "$?" == "0" ];
+then
+    abort "You need to be root, or have sudo permissions."
 fi
 
 
@@ -34,6 +42,8 @@ then
     usage
     abort
 fi
+
+
 
 
 WINE_PATH=$1
@@ -45,15 +55,15 @@ then
 fi
 
 
-ln -sf "${WINE_PATH}/bin/wine" /usr/local/bin/wine
+sudo ln -sf "${WINE_PATH}/bin/wine" /usr/local/bin/wine
 
 if [ -f "${WINE_PATH}/bin/wine64" ];
 then
-    ln -sf "${WINE_PATH}/bin/wine64" /usr/local/bin/wine64
+    sudo ln -sf "${WINE_PATH}/bin/wine64" /usr/local/bin/wine64
 fi
 
-ln -sf "${WINE_PATH}/bin/wineboot" /usr/local/bin/wineboot
-ln -sf "${WINE_PATH}/bin/winecfg" /usr/local/bin/winecfg
+sudo ln -sf "${WINE_PATH}/bin/wineboot" /usr/local/bin/wineboot
+sudo ln -sf "${WINE_PATH}/bin/winecfg" /usr/local/bin/winecfg
 
 
 echo "Using now Wine installation at ${WINE_PATH}."

@@ -16,9 +16,17 @@ function abort
 }
 
 
-if ! [ "$TERMUX_VERSION" == "" ] && [ "$ANDROID_DATA" == "" ];
+if ! [ "$TERMUX_VERSION" == "" ];
 then
-    abort "This script must be executed in a Termux proot environment."
+    abort "This script isn't for Termux."
+fi
+
+
+sudo -v
+
+if ! [ "$?" == "0" ];
+then
+    abort "You need to be root, or have sudo permissions."
 fi
 
 
@@ -45,6 +53,6 @@ WINE32_DEPS+=" libxcursor1:armhf libxfixes3:armhf libxi6:armhf"
 WINE32_DEPS+=" libxinerama1:armhf libxrandr2:armhf libxrender1:armhf"
 WINE32_DEPS+=" libxxf86vm1:armhf"
 
-apt install -y $WINE32_DEPS
+sudo apt install -y $WINE32_DEPS
 
 exit $?

@@ -24,6 +24,9 @@ function usage
     echo "Packages will be downloaded by default in /var/tmp/wine-pkgs"
     echo "but you can specify a custom path in 'out dir'."
     echo ""
+    echo "WARNING! You can download Wine without admin privileges, BUT,"
+    echo "you need them for updating APT database and GPG key installing."
+    echo ""
 }
 
 
@@ -127,10 +130,10 @@ if ! [ -f "/etc/apt/keyrings/winehq-archive.key" ];
 then
     if ! [ -d "/etc/apt/keyrings" ];
     then
-        mkdir "/etc/apt/keyrings"
+        sudo mkdir "/etc/apt/keyrings"
     fi
 
-    wget -O /etc/apt/keyrings/winehq-archive.key $WINE_GPG_URL
+    sudo wget -O /etc/apt/keyrings/winehq-archive.key $WINE_GPG_URL
 
     if ! [ "$?" == "0" ];
     then
@@ -144,7 +147,7 @@ fi
 echo ""
 echo "Checking for updated APT sources.list..."
 echo "----------------------------------------"
-wget -NP /etc/apt/sources.list.d/ $WINE_SOURCES_URL
+sudo wget -NP /etc/apt/sources.list.d/ $WINE_SOURCES_URL
 
 if [ "$?" == "0" ];
 then
@@ -156,7 +159,16 @@ echo ""
 echo "Updating APT database..."
 echo "------------------------"
 
-apt update
+sudo apt update
+
+if ! [ "$?" == "0" ];
+then
+    echo ""
+    echo "APT database updating failed. You have not admin permissions but,"
+    echo "if the database was updated previously, you may still"
+    echo "be able to download Wine..."
+    echo ""
+fi
 
 
 echo ""
@@ -188,6 +200,12 @@ else
 fi
 
 
+if ! [ "$?" == "0" ];
+then
+    abort "Download failed."
+fi
+
+
 echo "#!/bin/bash" > "$PWD/extract"
 echo "" >> "$PWD/extract"
 
@@ -203,12 +221,6 @@ echo "    dpkg-deb -x \$package /var/tmp/wine-${WINE_VERSION}" \
 echo "done" >> "$PWD/extract"
 echo "echo \"Done.\"" >> "$PWD/extract"
 
-
-
-if ! [ "$?" == "0" ];
-then
-    abort "Download failed."
-fi
 
 echo "Done."
 echo ""

@@ -110,7 +110,7 @@ then
 
     bexec_admin apt update
     bexec_admin apt upgrade -y
-    bexec_admin apt install -y dialog gpg mesa-utils wget
+    bexec_admin apt install -y dialog gpg mesa-utils sudo wget
 fi
 
 

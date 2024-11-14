@@ -24,14 +24,14 @@ function boxify_exec
     SCRIPT_PATH=$EXEC
     TRUE_EXEC=$(realpath $EXEC_PATH/${EXEC_FILENAME}_x86)
 
-    touch "$EXEC_PATH/permission_test"
+    sudo touch "$EXEC_PATH/permission_test"
 
     if ! [ "$?" == "0" ];
     then
         abort "You have not write permission in '$EXEC_PATH'."
     fi
 
-    rm "$EXEC_PATH/permission_test"
+    sudo rm "$EXEC_PATH/permission_test"
 
 
     if [ -f "$TRUE_EXEC" ];
@@ -43,12 +43,14 @@ function boxify_exec
     fi
 
 
-    mv "$EXEC" "$TRUE_EXEC"    
+    sudo mv "$EXEC" "$TRUE_EXEC"    
 
-    echo "#!/bin/bash" > "$SCRIPT_PATH"
-    echo "" >> "$SCRIPT_PATH"
-    echo "$LAUNCHER $TRUE_EXEC \$*" >> "$SCRIPT_PATH"
-    echo "" >> "$SCRIPT_PATH"
+    echo "#!/bin/bash" > /var/tmp/boxified_executable
+    echo "" >> /var/tmp/boxified_executable
+    echo "$LAUNCHER $TRUE_EXEC \$*" >> /var/tmp/boxified_executable
+    echo "" >> /var/tmp/boxified_executable
+
+    sudo mv /var/tmp/boxified_executable "$SCRIPT_PATH"
 
     chmod +x "$SCRIPT_PATH"
 
@@ -70,6 +72,20 @@ function usage
     echo "depending of the executable architecture."
     echo ""
 }
+
+
+if ! [ "$TERMUX_VERSION" == "" ];
+then
+    abort "This script isn't for Termux."
+fi
+
+
+sudo -v
+
+if ! [ "$?" == "0" ];
+then
+    abort "You need to be root, or have sudo permissions."
+fi
 
 
 if [ "$1" == "" ] || [ "$1" == "-h" ] || [ "$1" == "--help" ];
