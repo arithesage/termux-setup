@@ -60,7 +60,7 @@ fi
 
 
 if ! [ "$ARCH" == "i386" ] && ! [ "$ARCH" == "amd64" ] && \
-   ! [ "$WINE_BRANCH" == "both" ];
+   ! [ "$ARCH" == "both" ];
 then
     echo "Invalid architecture value '${ARCH}'."
     abort "Only i386, amd64 or both are valid."
@@ -179,24 +179,24 @@ cd $WINE_DOWNLOAD_DIR
 
 if ! [ "$ARCH" == "both" ];
 then
-    apt download wine-${WINE_BRANCH}:${ARCH}=\
-        ${WINE_VERSION}~${DISTRO_CODENAME}-1
+    apt download wine-${WINE_BRANCH}:${ARCH}=${WINE_VERSION} \
+                 ~${DISTRO_CODENAME}-1
 
-    apt download wine-${WINE_BRANCH}-${ARCH}=\
-        ${WINE_VERSION}~${DISTRO_CODENAME}-1
+    apt download wine-${WINE_BRANCH}-${ARCH}=${WINE_VERSION} \
+                 ~${DISTRO_CODENAME}-1
 
 else
-    apt download wine-${WINE_BRANCH}:i386=\
-        ${WINE_VERSION}~${DISTRO_CODENAME}-1
+    apt download wine-${WINE_BRANCH}:i386=${WINE_VERSION} \
+                 ~${DISTRO_CODENAME}-1
 
-    apt download wine-${WINE_BRANCH}-i386=\
-        ${WINE_VERSION}~${DISTRO_CODENAME}-1
+    apt download wine-${WINE_BRANCH}-i386=${WINE_VERSION} \
+                 ~${DISTRO_CODENAME}-1
 
-    apt download wine-${WINE_BRANCH}:amd64=\
-        ${WINE_VERSION}~${DISTRO_CODENAME}-1
+    apt download wine-${WINE_BRANCH}:amd64=${WINE_VERSION} \
+                 ~${DISTRO_CODENAME}-1
 
-    apt download wine-${WINE_BRANCH}-amd64=\
-        ${WINE_VERSION}~${DISTRO_CODENAME}-1
+    apt download wine-${WINE_BRANCH}-amd64=${WINE_VERSION} \
+                 ~${DISTRO_CODENAME}-1
 fi
 
 
