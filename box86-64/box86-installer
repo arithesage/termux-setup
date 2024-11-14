@@ -45,6 +45,9 @@ then
 fi
 
 
+SETUP_DIR=$(realpath $(dirname $0))
+
+
 if [ "$DISTRO_NAME" == "" ];
 then
     DISTRO_NAME=$(cat /etc/os-release | grep ^ID= | cut -d '=' -f 2)
@@ -82,7 +85,7 @@ echo "==================="
 
 if [ "$DISTRO_NAME" == "ubuntu" ];
 then
-    sudo cp -f "$HOME/apt/fixed-ubuntu_sources.list" /etc/apt/sources.list
+    sudo cp -f "$SETUP_DIR/apt/fixed-ubuntu_sources.list" /etc/apt/sources.list
 fi
 
 
@@ -177,7 +180,7 @@ then
         wget -qO- "$BOX86_GPG_URL" | \
         sudo gpg --dearmor -o "/usr/share/keyrings/box86.gpg"
     else
-        ls "$HOME/deb/*.gpg" | \
+        ls "$SETUP_DIR/deb/*.gpg" | \
         sudo gpg --dearmor -o "/usr/share/keyrings/box86.gpg"
     fi
 
@@ -223,7 +226,7 @@ echo "Enabled armhf and i386 architectures in dpkg."
 
 if [ "$DISTRO_NAME" == "ubuntu" ];
 then
-    sudo cp "$HOME/apt/ubuntu-i386.list" /etc/apt/sources.list.d/
+    sudo cp "$SETUP_DIR/apt/ubuntu-i386.list" /etc/apt/sources.list.d/
 fi
 
 
@@ -251,29 +254,13 @@ if ! [ "$USE_CACHED_BOX86"=="1" ];
 then
     sudo apt install -y ${BOX86}
 else
-    sudo dpkg -i $(ls deb/box86*.deb)
+    sudo dpkg -i $(ls $SETUP_DIR/deb/box86*.deb)
 fi
 
 if ! [ "$?" == "0" ];
 then
     echo ""
     abort "Failed installing box86."
-fi
-
-
-grep .local/bin "$HOME/.environment" > /dev/null
-
-if ! [ "$?" == "0" ];
-then
-    echo "export PATH=\$PATH:\$HOME/scripts" >> "$HOME/.environment"
-    echo "export PATH=\$PATH:\$HOME/.local/bin" >> "$HOME/.environment"
-
-    grep .environment $HOME/.bashrc > /dev/null
-
-    if ! [ "$?" == "0" ];
-    then
-        echo "source \$HOME/.environment" >> $HOME/.bashrc
-    fi
 fi
 
 

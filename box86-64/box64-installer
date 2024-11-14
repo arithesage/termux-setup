@@ -45,6 +45,9 @@ then
 fi
 
 
+SETUP_DIR=$(realpath $(dirname $0))
+
+
 if [ "$DISTRO_NAME" == "" ];
 then
     DISTRO_NAME=$(cat /etc/os-release | grep ^ID= | cut -d '=' -f 2)
@@ -74,6 +77,7 @@ BOX64_MAIN_GPG_URL="https://pi-apps-coders.github.io/box86-debs/KEY.gpg"
 BOX64_ALT_URL="https://ryanfortner.github.io/box86-debs/"
 BOX64_ALT_GPG_URL="https://ryanfortner.github.io/box64-debs/KEY.gpg"
 
+
 echo "==================="
 echo "--- Box64 setup ---"
 echo "==================="
@@ -81,7 +85,7 @@ echo "==================="
 
 if [ "$DISTRO_NAME" == "ubuntu" ];
 then
-    sudo cp -f "$HOME/apt/fixed-ubuntu_sources.list" /etc/apt/sources.list
+    sudo cp -f "$SETUP_DIR/apt/fixed-ubuntu_sources.list" /etc/apt/sources.list
 fi
 
 
@@ -221,7 +225,7 @@ echo "Enabled amd64 architecture in dpkg."
 
 if [ "$DISTRO_NAME" == "ubuntu" ];
 then
-    sudo cp "$HOME/apt/ubuntu-amd64.list" /etc/apt/sources.list.d/
+    sudo cp "$SETUP_DIR/apt/ubuntu-amd64.list" /etc/apt/sources.list.d/
 fi
 
 
@@ -240,29 +244,13 @@ if ! [ "$USE_CACHED_BOX64"=="1" ];
 then
     sudo apt install -y ${BOX64}
 else
-    sudo dpkg -i $(ls deb/box64*.deb)
+    sudo dpkg -i $(ls $SETUP_DIR/deb/box64*.deb)
 fi
 
 if ! [ "$?" == "0" ];
 then
     echo ""
     abort "Failed installing box64."
-fi
-
-
-grep .local/bin "$HOME/.environment" > /dev/null
-
-if ! [ "$?" == "0" ];
-then
-    echo "export PATH=\$PATH:\$HOME/scripts" >> "$HOME/.environment"
-    echo "export PATH=\$PATH:\$HOME/.local/bin" >> "$HOME/.environment"
-
-    grep .environment $HOME/.bashrc > /dev/null
-
-    if ! [ "$?" == "0" ];
-    then
-        echo "source \$HOME/.environment" >> $HOME/.bashrc
-    fi
 fi
 
 
