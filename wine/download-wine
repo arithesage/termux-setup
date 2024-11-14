@@ -177,26 +177,21 @@ echo "-----------------------------------------------------"
 
 cd $WINE_DOWNLOAD_DIR
 
+# Allows fitting apt download commands in 80 colunns
+BRANCH=$WINE_BRANCH
+VERSION=$WINE_VERSION
+DISTRO=$DISTRO_CODENAME
+
 if ! [ "$ARCH" == "both" ];
 then
-    apt download wine-${WINE_BRANCH}:${ARCH}=${WINE_VERSION} \
-                 ~${DISTRO_CODENAME}-1
-
-    apt download wine-${WINE_BRANCH}-${ARCH}=${WINE_VERSION} \
-                 ~${DISTRO_CODENAME}-1
+    apt download wine-${BRANCH}:${ARCH}=${VERSION}~${DISTRO}-1
+    apt download wine-${BRANCH}-${ARCH}=${VERSION}~${DISTRO}-1
 
 else
-    apt download wine-${WINE_BRANCH}:i386=${WINE_VERSION} \
-                 ~${DISTRO_CODENAME}-1
-
-    apt download wine-${WINE_BRANCH}-i386=${WINE_VERSION} \
-                 ~${DISTRO_CODENAME}-1
-
-    apt download wine-${WINE_BRANCH}:amd64=${WINE_VERSION} \
-                 ~${DISTRO_CODENAME}-1
-
-    apt download wine-${WINE_BRANCH}-amd64=${WINE_VERSION} \
-                 ~${DISTRO_CODENAME}-1
+    apt download wine-${BRANCH}:i386=${VERSION}~${DISTRO}-1
+    apt download wine-${BRANCH}-i386=${VERSION}~${DISTRO}-1
+    apt download wine-${BRANCH}:amd64=${VERSION}~${DISTRO}-1
+    apt download wine-${BRANCH}-amd64=${VERSION}~${DISTRO}-1
 fi
 
 
