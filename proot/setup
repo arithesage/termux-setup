@@ -1,0 +1,102 @@
+#!/bin/bash
+
+function abort
+{
+    REASON=$1
+
+    if [ "$REASON" == "" ];
+    then
+        echo $REASON
+    fi
+
+    echo ""
+    
+    exit 1
+}
+
+
+function usage
+{
+    echo "Usage: setup [distro] [proot_name] [user]"
+    echo ""
+    echo "Installs a new proot-distro."
+    echo "If no proot_name is given, proot's default one will be used."
+    echo "If a user is given, it will be created after proot install."
+    echo "Default distro is Debian stable."
+    echo ""
+}
+
+
+SCRIPT_PATH=$(realpath $(dirname $0))
+
+
+
+
+if [ "$1" == "-h" ] || [ "$1" == "--h" ];
+then
+    usage
+    abort
+fi
+
+
+DISTRO=$1
+PROOT_NAME=$2
+PROOT_USER=$3
+
+
+if ! [ "$TERMUX_VERSION" == "" ];
+then
+    abort "This script is intended for Termux only."
+fi
+
+
+if [ "$1" == "" ];
+then
+    DISTRO="debian"
+fi
+
+
+if [ "$PREFIX/usr/bin/proot-distro" ];
+then
+    echo "Installing proot-distro ..."
+    echo "---------------------------"
+
+    pkg install proot-distro
+
+    if ! [ "$?" == "0" ];
+    then
+        echo ""
+        abort "Failed!"
+    fi
+fi
+
+
+PROOT_INSTALL_OPTS="${DISTRO}"
+
+if ! [ "$PROOT_NAME" == "" ];
+then
+    PROOT_INSTALL_OPTS+= " --override-alias $PROOT_NAME"
+fi
+
+if ! [ "$PROOT_USER" == "" ];
+then
+        
+fi
+
+
+proot-distro $PROOT_INSTALL_OPTS
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
