@@ -18,7 +18,7 @@ function abort
 
 function usage
 {
-    echo "Usage: puser <proot name> <usename> <command line>"
+    echo "Usage: pexec <proot name> <usename> <command line>"
     echo "Executes the given command line in the given proot installation."
     echo "The command line is executed as the given username."
     echo ""

@@ -18,7 +18,7 @@ function abort
 
 function usage
 {
-    echo "Usage: padmin <proot name> <command line>"
+    echo "Usage: pexec_admin <proot name> <command line>"
     echo "Executes the given command line in the given proot installation."
     echo "The command line is executed as root."
     echo ""
