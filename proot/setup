@@ -42,7 +42,7 @@ then
 fi
 
 
-if [ "$PREFIX/usr/bin/proot-distro" ];
+if ! [ -f "$PREFIX/usr/bin/proot-distro" ];
 then
     echo "Installing proot-distro ..."
     echo "---------------------------"
