@@ -17,17 +17,14 @@ function abort
 
 function usage
 {
-    echo "Usage: setup [distro] [proot_name] [user]"
-    echo ""
     echo "Installs a new proot-distro."
-    echo "If no proot_name is given, proot's default one will be used."
-    echo "If a user is given, it will be created after proot install."
-    echo "Default distro is Debian stable."
+    echo ""
+    echo "Export these variables to configure it: "
+    echo "- PROOT_DISTRO: Distro to be installed (Debian stable by default)."
+    echo "- PROOT_NAME: The proot name. It is 'debian' by default."
+    echo "- PROOT_USER: Adds this user after installation. Puser by default."
     echo ""
 }
-
-
-SCRIPT_PATH=$(realpath $(dirname $0))
 
 
 
@@ -39,20 +36,9 @@ then
 fi
 
 
-DISTRO=$1
-PROOT_NAME=$2
-PROOT_USER=$3
-
-
 if ! [ "$TERMUX_VERSION" == "" ];
 then
     abort "This script is intended for Termux only."
-fi
-
-
-if [ "$1" == "" ];
-then
-    DISTRO="debian"
 fi
 
 
@@ -71,24 +57,113 @@ then
 fi
 
 
-PROOT_INSTALL_OPTS="${DISTRO}"
-
-if ! [ "$PROOT_NAME" == "" ];
+if [ "$PROOT_DISTRO" == "" ];
 then
-    PROOT_INSTALL_OPTS+= " --override-alias $PROOT_NAME"
+    PROOT_DISTRO="debian"
 fi
 
-if ! [ "$PROOT_USER" == "" ];
+if [ "$PROOT_NAME" == "" ];
 then
-        
+    PROOT_NAME="$PROOT_DISTRO"
+fi
+
+if [ "$PROOT_USER" == "" ];
+then
+    PROOT_USER="puser"
+fi
+
+
+PROOT_PATH="$PREFIX/var/lib/proot-distro/installed-rootfs/${PROOT_NAME}"
+
+
+if [ -d "$PROOT_PATH" ];
+then
+    abort "A proot named '${PROOT_NAME}' already exists in ${PROOT_PATH}."
+fi
+
+
+PROOT_INSTALL_OPTS="${PROOT_DISTRO}"
+
+if ! [ "$PROOT_NAME" == "$PROOT_DISTRO" ];
+then
+    PROOT_INSTALL_OPTS+= " --override-alias $PROOT_NAME"
 fi
 
 
 proot-distro $PROOT_INSTALL_OPTS
 
+if ! [ "$?" == "0" ];
+then
+    abort "Proot failed installing."
+fi
 
 
+proot-distro login ${PROOT_NAME} 
+                 useradd --create-home \
+                         --shell /bin/bash $PROOT_USER
 
+if [ "$?" == "0" ];
+then
+    echo "User ${PROOT_USER} created."
+    echo ""
+fi
+
+
+if ! [ -f "$HOME/scripts/penter" ];
+then
+    mkdir -p "$HOME/scripts"
+
+    cp "$HOME/termux-setup/proot/pexec_admin" "$HOME/scripts/"
+    cp "$HOME/termux-setup/proot/penter" "$HOME/scripts/"
+    cp "$HOME/termux-setup/proot/penter_admin" "$HOME/scripts/"
+    cp "$HOME/termux-setup/proot/pexec" "$HOME/scripts/"
+
+    chmod -R 770 "$HOME/scripts"
+fi
+
+
+if ! [ -f "$HOME/.proot_env" ];
+then
+    echo "export ${PROOT_NAME}_PROOT_DISTRO=\"${PROOT_DISTRO}\"" >> \
+         "$HOME/.${PROOT_NAME}_proot_env"
+
+    echo "export ${PROOT_NAME}_PROOT_NAME=\"${PROOT_NAME}\"" >> \
+         "$HOME/.${PROOT_NAME}_proot_env"
+
+    echo "export ${PROOT_NAME}_PROOT_USER=\"${PROOT_USER}\"" >> \
+         "$HOME/.${PROOT_NAME}_proot_env"
+
+    echo "export ${PROOT_NAME}_PROOT_PATH=\"${PROOT_PATH}\"" >> \
+         "$HOME/.${PROOT_NAME}_proot_env"
+fi
+
+
+echo -n "Proot distro ${PROOT_NAME} (${PROOT_DISTRO}) installed in"
+echo "${PROOT_PATH}."
+
+echo "The following variables have been added to ~/.${PROOT_NAME}_proot_env: "
+echo "- ${PROOT_NAME}_PROOT_DISTRO: Contains the distro name"
+echo "- ${PROOT_NAME}_PROOT_NAME: Contains the proot folder name"
+echo "- ${PROOT_NAME}_PROOT_USER: Contains the created user"
+echo "- ${PROOT_NAME}_PROOT_PATH: Contains the proot path"
+echo ""
+echo "You can source it to include these variables in your current"
+echo "environment or add 'source \$HOME/${PROOT_NAME}_proot_env'"
+echo "(without single quotes) to your .bash_rc or .environment file"
+echo "to get them added everytime you login."
+echo ""
+echo "Also, the following scripts have been added to ~\scripts and your PATH:"
+echo ""
+echo "- pexec_admin:    Executes a command line in the proot as root."
+echo "                  This is the recommended way to install software"
+echo "                  rather than using sudo."
+echo ""
+echo "                  Remember your home dir will be /root"
+echo ""
+echo "- pexec:          Executes a command line as ${PROOT_USER}."
+echo "- penter:         Enter the proot environment as ${PROOT_USER}."
+echo "- penter_admin:   Enter the proot environment as root."
+echo ""
 
 
 
