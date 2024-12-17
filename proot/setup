@@ -4,7 +4,7 @@ function abort
 {
     REASON=$1
 
-    if [ "$REASON" == "" ];
+    if ! [ "$REASON" == "" ];
     then
         echo $REASON
     fi
@@ -36,7 +36,7 @@ then
 fi
 
 
-if ! [ "$TERMUX_VERSION" == "" ];
+if [ "$TERMUX_VERSION" == "" ];
 then
     abort "This script is intended for Termux only."
 fi
@@ -90,7 +90,7 @@ then
 fi
 
 
-proot-distro $PROOT_INSTALL_OPTS
+proot-distro install $PROOT_INSTALL_OPTS
 
 if ! [ "$?" == "0" ];
 then
