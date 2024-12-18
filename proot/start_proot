@@ -60,6 +60,15 @@ then
 fi
 
 
+PROOT_SSHD_PID_PATH="$PREFIX/var/lib/proot-distro/installed-rootfs"
+PROOT_SSHD_PID_PATH+="/${PROOT}/var/run/sshd.pid"
+
+if [ -f "${PROOT_SSHD_PID_PATH}" ];
+then
+    abort "The proot '${PROOT}' is already on."
+fi
+
+
 if ! [ "$EXT_SD" == "" ];
 then
     SD_BINDING="--bind $EXT_SD:/mnt/extsd"
