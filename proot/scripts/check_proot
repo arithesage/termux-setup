@@ -21,9 +21,7 @@ function usage
     echo "Usage: proot_is_running <proot name>"
     echo ""
     echo "Checks if the given proot is accesible."
-    echo "We first check if the proot is running, and then if"
-    echo "the SSH server is also running for being able to"
-    echo "communicate with the proot."
+    echo "We basically check if the proot SSH server is running."
     echo ""
 }
 
@@ -44,14 +42,6 @@ PROOTS_PATH="$PREFIX/var/lib/proot-distro/installed-rootfs"
 if ! [ -d "${PROOTS_PATH}/${PROOT}" ];
 then
     abort "Proot '${PROOT} isn't installed."
-fi
-
-
-ps aux | grep "proot-distro/installed-rootfs/${PROOT}" > /dev/null
-
-if ! [ "$?" == "0" ];
-then
-    abort "Proot '${PROOT} isn't running."
 fi
 
 
