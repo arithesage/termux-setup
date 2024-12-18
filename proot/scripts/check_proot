@@ -1,0 +1,89 @@
+#!/bin/bash
+
+
+function abort
+{
+    REASON=$1
+
+    if ! [ "$REASON" == "" ];
+    then
+        echo "$REASON"
+    fi
+
+    echo ""
+
+    exit 1
+}
+
+
+function usage
+{
+    echo "Usage: proot_is_running <proot name>"
+    echo ""
+    echo "Checks if the given proot is accesible."
+    echo "We first check if the proot is running, and then if"
+    echo "the SSH server is also running for being able to"
+    echo "communicate with the proot."
+    echo ""
+}
+
+
+if [ "$1" == "" ] || [ "$1" == "-h" ] || [ "$1" == "--help" ];
+then
+    usage
+    abort
+fi
+
+
+
+
+PROOT=$1
+PROOTS_PATH="$PREFIX/var/lib/proot-distro/installed-rootfs"
+
+
+if ! [ -d "${PROOTS_PATH}/${PROOT}" ];
+then
+    abort "Proot '${PROOT} isn't installed."
+fi
+
+
+ps aux | grep "proot-distro/installed-rootfs/${PROOT}" > /dev/null
+
+if ! [ "$?" == "0" ];
+then
+    abort "Proot '${PROOT} isn't running."
+fi
+
+
+PROOT_SSHD_PID=$(pexec_admin $PROOT cat /var/run/sshd.pid)
+
+if [ "$PROOT_SSHD_PID" == "" ];
+then
+    abort "Proot's /var/run/sshd.pid file is empty or can't access it."
+fi
+
+
+SSHD_PID=$PROOT_SSHD_PID
+PROOT_SSHD_PID_CMDLINE=$(pexec_admin $PROOT cat /proc/${SSHD_PID/cmdline})
+
+if [ "$PROOT_SSHD_PID_CMDLINE" == "" ];
+then
+    abort "Can't access proot's /proc/${SSHD_PID}/cmdline file."
+fi
+
+
+echo "$PROOT_SSHD_PID_CMDLINE" | grep "/usr/sbin/sshd" > /dev/null
+
+if [ "$?" == "0" ];
+then
+    echo "Proot seems reachable."
+    echo ""
+
+    exit 0
+
+else
+    echo "Could not find proot's sshd process."
+    echo ""
+
+    exit 1
+fi
