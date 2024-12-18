@@ -54,7 +54,7 @@ fi
 
 
 SSHD_PID=$PROOT_SSHD_PID
-PROOT_SSHD_PID_CMDLINE=$(pexec_admin $PROOT cat /proc/${SSHD_PID/cmdline})
+PROOT_SSHD_PID_CMDLINE=$(pexec_admin $PROOT cat /proc/${SSHD_PID}/cmdline)
 
 if [ "$PROOT_SSHD_PID_CMDLINE" == "" ];
 then
