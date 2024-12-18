@@ -98,12 +98,27 @@ then
 fi
 
 
+echo ""
+echo "Updating proot ..."
+echo ""
+
+proot_distro login ${PROOT_NAME} -- apt update && apt upgrade -y
+
+
+echo ""
+echo "Installing SSH in proot for remote access ..."
+echo ""
+
+proot_distro login ${PROOT_NAME} -- apt install -y openssh-server
+
+
 proot-distro login ${PROOT_NAME} -- \
                  useradd --create-home \
                          --shell /bin/bash $PROOT_USER
 
 if [ "$?" == "0" ];
 then
+    echo ""
     echo "User ${PROOT_USER} created."
     echo ""
 fi
@@ -122,6 +137,8 @@ then
     cp "$HOME/termux-setup/proot/penter" "$HOME/scripts/"
     cp "$HOME/termux-setup/proot/penter_admin" "$HOME/scripts/"
     cp "$HOME/termux-setup/proot/pexec" "$HOME/scripts/"
+    cp "$HOME/termux-setup/proot/start_proot" "$HOME/scripts/"
+    cp "$HOME/termux-setup/proot/stop_proot" "$HOME/scripts/"
 
     chmod -R 770 "$HOME/scripts"
 fi

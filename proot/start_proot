@@ -1,0 +1,78 @@
+#!/bin/bash
+
+
+function abort
+{
+    REASON=$1
+
+    if ! [ "$REASON" == "" ];
+    then
+        echo "$REASON"
+    fi
+
+    echo ""
+
+    exit 1
+}
+
+
+function usage
+{
+    echo "Usage: start_proot <proot name>"
+    echo ""
+    echo "'Turns on' the given proot."
+    echo "The pexec commands allows executing command lines in proot"
+    echo "but, after execution, the proot session is closed."
+    echo ""
+    echo "This script starts the proot SSH server (listening in the 8002"
+    echo "port) and keeps the session opened until the server is killed."
+    echo ""
+    echo "This way you can connect to proot from SSH and execute all"
+    echo "command lines you like."
+    echo ""
+    echo "The proot will be shutdown after executing 'stop_proot' or when"
+    echo "Termux is closed."
+    echo ""
+}
+
+
+if [ "$1" == "" ] || [ "$1" == "-h" ] || [ "$1" == "--help" ];
+then
+    usage
+    abort
+fi
+
+
+if [ "$TERMUX_VERSION" == "" ];
+then
+    abort "This script is intended for Termux only."
+fi
+
+
+
+
+PROOT=$1
+
+if [ "$PROOT" == "" ];
+then
+    usage
+    abort
+fi
+
+
+if ! [ "$EXT_SD" == "" ];
+then
+    SD_BINDING="--bind $EXT_SD:/mnt/extsd"
+fi
+
+
+proot-distro login $PROOT $SD_BINDING \
+             --shared-tmp --no-kill-on-exit -- /usr/sbin/sshd
+
+if [ "$?" == "0" ];
+then
+    echo "Proot '${PROOT}' is now available for remote working."
+    echo ""
+fi
+
+
