@@ -54,7 +54,7 @@ then
 fi
 
 
-proot-distro login $PROOT $SD_BINDING --shared-tmp -- kill -9 sshd
+proot-distro login $PROOT $SD_BINDING --shared-tmp -- kill -9 $(cat /var/run/sshd.pid)
 
 if [ "$?" == "0" ];
 then
