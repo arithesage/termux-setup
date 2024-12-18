@@ -76,7 +76,7 @@ fi
 
 
 proot-distro login $PROOT $SD_BINDING \
-             --shared-tmp --no-kill-on-exit -- /usr/sbin/sshd
+             --shared-tmp --no-kill-on-exit -- /usr/sbin/sshd -p 8002
 
 if [ "$?" == "0" ];
 then
