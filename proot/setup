@@ -144,7 +144,7 @@ then
 fi
 
 
-cp "$HOME/termux-setup/proot/stop_sshd" "$PROOT_PATH/usr/bin/"
+cp $HOME/termux-setup/proot/proot_scripts/* "$PROOT_PATH/usr/bin/"
 
 
 if ! [ -f "$HOME/.proot_env" ];

@@ -69,7 +69,7 @@ then
 fi
 
 
-screen -list | grep -q "proot_${PROOT}"
+is_proot_running $PROOT
 
 if [ "$?" == "0" ];
 then
@@ -87,7 +87,7 @@ screen -dmS proot_${PROOT} proot-distro login ${PROOT} ${SD_BINDING} \
                                         --shared-tmp --no-kill-on-exit \
                                         -- /usr/sbin/sshd -p 8002
 
-screen -list | grep -q "proot_${PROOT}"
+is_proot_running $PROOT
 
 if [ "$?" == "0" ];
 then
