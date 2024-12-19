@@ -75,13 +75,9 @@ then
 fi
 
 
+echo "Proot '${PROOT}' should be now available for remote working."
+echo ""
+
 proot-distro login $PROOT $SD_BINDING \
              --shared-tmp --no-kill-on-exit -- /usr/sbin/sshd -p 8002
-
-if [ "$?" == "0" ];
-then
-    echo "Proot '${PROOT}' is now available for remote working."
-    echo ""
-fi
-
 

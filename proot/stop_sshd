@@ -35,6 +35,8 @@ then
         if [ "$?" == "0" ];
         then
             kill -9 $SSHD_PID
+            
+            exit 0
         fi
     fi
 fi

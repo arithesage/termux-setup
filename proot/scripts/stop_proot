@@ -47,35 +47,41 @@ then
     abort
 fi
 
+echo "Trying to stop proot ..."
 
-echo "Checking proot access ..."
-echo "-------------------------"
+pexec_admin $PROOT stop_sshd
 
-check_proot $PROOT
-
-if [ "$?" == "1" ];
+if ! [ "$?" == "0" ];
 then
-    abort "Failed!"
+    abort "Command line returned non-zero. Something failed."
 fi
 
 
-PROOT_SSHD_PID_PATH="$PREFIX/var/lib/proot-distro/installed-rootfs"
-PROOT_SSHD_PID_PATH+="/${PROOT}/var/run/sshd.pid"
+#echo "Checking proot access ..."
+#echo "-------------------------"
+
+#check_proot $PROOT
+
+#if [ "$?" == "1" ];
+#then
+#    abort "Failed!"
+#fi
 
 
-if ! [ "$EXT_SD" == "" ];
-then
-    SD_BINDING="--bind $EXT_SD:/mnt/extsd"
-fi
+#PROOT_SSHD_PID_PATH="$PREFIX/var/lib/proot-distro/installed-rootfs"
+#PROOT_SSHD_PID_PATH+="/${PROOT}/var/run/sshd.pid"
 
 
-proot-distro login $PROOT $SD_BINDING \
-             --shared-tmp -- kill -9 $(cat /var/run/sshd.pid)
+#if ! [ "$EXT_SD" == "" ];
+#then
+#    SD_BINDING="--bind $EXT_SD:/mnt/extsd"
+#fi
 
-if [ "$?" == "0" ];
-then
-    echo "Proot '${PROOT}' is now closed."
-    echo ""
-fi
+
+#proot-distro login $PROOT $SD_BINDING \
+#             --shared-tmp -- kill -9 $(cat /var/run/sshd.pid)
+
+echo "Proot '${PROOT}' should be closed now."
+echo ""
 
 
