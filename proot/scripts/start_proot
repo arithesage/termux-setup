@@ -69,7 +69,7 @@ then
 fi
 
 
-ps aux | grep -q "installed-rootfs/${PROOT}"
+screen -list | grep -q "proot_${PROOT}"
 
 if [ "$?" == "0" ];
 then
