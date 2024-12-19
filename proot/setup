@@ -144,6 +144,9 @@ then
 fi
 
 
+cp "$HOME/termux-setup/proot/stop_sshd" "$PROOT_PATH/usr/bin/"
+
+
 if ! [ -f "$HOME/.proot_env" ];
 then
     echo "export PROOT_${PROOT_NAME}=\"${PROOT_NAME}\"" >> \
