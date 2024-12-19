@@ -60,24 +60,44 @@ then
 fi
 
 
-PROOT_SSHD_PID_PATH="$PREFIX/var/lib/proot-distro/installed-rootfs"
-PROOT_SSHD_PID_PATH+="/${PROOT}/var/run/sshd.pid"
+PROOT_PATH="${PREFIX}/var/lib/proot-distro/installed-rootfs/${PROOT}"
 
-if [ -f "${PROOT_SSHD_PID_PATH}" ];
+
+if ! [ -d "$PROOT_PATH" ];
+then
+    abort "The proot '$PROOT' does not exist."
+fi
+
+
+ps aux | grep -q "installed-rootfs/${PROOT}"
+
+if [ "$?" == "0" ];
 then
     abort "The proot '${PROOT}' is already on."
 fi
 
 
-if ! [ "$EXT_SD" == "" ];
+#if ! [ "$EXT_SD" == "" ];
+#then
+#    SD_BINDING="--bind $EXT_SD:/mnt/extsd"
+#fi
+
+echo "Trying to power-on proot '${PROOT} ..."
+screen -dmS proot_$PROOT pexec_admin $PROOT -- /usr/sbin/sshd -p 8002
+
+
+screen -list | grep -q "proot_${PROOT}"
+
+if [ "$?" == "0" ];
 then
-    SD_BINDING="--bind $EXT_SD:/mnt/extsd"
+    echo "Proot '${PROOT}' should be now available for remote working."
+    echo ""
+
+else
+    abort "Can't find proot's screen. Something failed."
 fi
 
 
-echo "Proot '${PROOT}' should be now available for remote working."
-echo ""
-
-proot-distro login $PROOT $SD_BINDING \
-             --shared-tmp --no-kill-on-exit -- /usr/sbin/sshd -p 8002
+#proot-distro login $PROOT $SD_BINDING \
+#             --shared-tmp --no-kill-on-exit -- /usr/sbin/sshd -p 8002
 
