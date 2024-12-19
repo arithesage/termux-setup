@@ -97,8 +97,3 @@ then
 else
     abort "Can't find proot's screen. Something failed."
 fi
-
-
-#proot-distro login $PROOT $SD_BINDING \
-#             --shared-tmp --no-kill-on-exit -- /usr/sbin/sshd -p 8002
-

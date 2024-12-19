@@ -47,6 +47,15 @@ then
     abort
 fi
 
+
+screen -list | grep -q "proot_${PROOT}"
+
+if ! [ "$?" == "0" ];
+then
+    abort "The proot '${PROOT}' is already off."
+fi
+
+
 echo "Trying to stop proot ..."
 
 pexec_admin $PROOT stop_sshd
