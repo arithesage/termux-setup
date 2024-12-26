@@ -68,7 +68,7 @@ fi
 
 if [ "$PROOT_NAME" == "" ];
 then
-    PROOT_NAME=$PROOT_DISTRO
+    PROOT_NAME="$PROOT_DISTRO"
 fi
 
 if [ "$PROOT_USER" == "" ];
@@ -78,7 +78,7 @@ fi
 
 if ! [ "$PROOT_ARCH" == "" ];
 then
-    export DISTRO_ARCH=$PROOT_ARCH
+    export DISTRO_ARCH="$PROOT_ARCH"
 fi
 
 
@@ -91,12 +91,14 @@ then
 fi
 
 
-PROOT_INSTALL_OPTS="${PROOT_DISTRO}"
+PROOT_INSTALL_OPTS=""
 
 if ! [ "$PROOT_NAME" == "$PROOT_DISTRO" ];
 then
-    PROOT_INSTALL_OPTS+= " --override-alias $PROOT_NAME"
+    PROOT_INSTALL_OPTS+= "--override-alias $PROOT_NAME "
 fi
+
+PROOT_INSTALL_OPTS="${PROOT_DISTRO} "
 
 
 proot-distro install $PROOT_INSTALL_OPTS
