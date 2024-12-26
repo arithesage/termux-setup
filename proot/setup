@@ -156,6 +156,8 @@ then
     cp "$SCRIPT_PATH/scripts/start_proot" "$HOME/scripts/"
     cp "$SCRIPT_PATH/scripts/stop_proot" "$HOME/scripts/"
 
+    cp "$SCRIPT_PATH/setup" "$HOME/scripts/setup_proot"
+
     chmod -R 770 "$HOME/scripts"
 fi
 
