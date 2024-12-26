@@ -180,9 +180,9 @@ fi
 cp $SCRIPT_PATH/proot_scripts/* "$PROOT_PATH/usr/bin/"
 
 
-if ! [ -f "$HOME/.proot_env" ];
+if ! [ -f "$HOME/.${PROOT_NAME}_proot_env" ];
 then
-    echo "export PROOT_${PROOT_NAME}=\"${PROOT_NAME}\"" >> \
+    echo "export PROOT_${PROOT_NAME}=\"${PROOT_NAME}\"" > \
          "$HOME/.${PROOT_NAME}_proot_env"
 
     echo "export ${PROOT_NAME}_PROOT_DISTRO=\"${PROOT_DISTRO}\"" >> \
