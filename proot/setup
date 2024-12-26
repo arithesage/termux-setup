@@ -79,6 +79,19 @@ fi
 if ! [ "$PROOT_ARCH" == "" ];
 then
     export DISTRO_ARCH="$PROOT_ARCH"
+
+    if ! [ -f "$PREFIX/bin/qemu-user-$PROOT_ARCH" ];
+    then
+        echo "Installing ${PROOT_ARCH} architecture support ..."
+        echo "-------------------------------------------------"
+
+        pkg install -y qemu-user-$PROOT_ARCH
+
+        if ! [ "$?" == "0" ];
+        then
+            abort "Failed installing 'qemu-user-$PROOT_ARCH' package."
+        fi
+    fi
 fi
 
 
