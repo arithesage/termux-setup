@@ -28,6 +28,7 @@ function usage
 }
 
 
+SCRIPT_PATH=$(realpath $(dirname $0))
 
 
 if [ "$1" == "-h" ] || [ "$1" == "--h" ];
@@ -37,18 +38,20 @@ then
 fi
 
 
+
+
 if [ "$TERMUX_VERSION" == "" ];
 then
     abort "This script is intended for Termux only."
 fi
 
 
-if ! [ -f "$PREFIX/usr/bin/proot-distro" ];
+if ! [ -f "$PREFIX/bin/proot-distro" ];
 then
     echo "Installing proot-distro ..."
     echo "---------------------------"
 
-    pkg install proot-distro
+    pkg install -y proot-distro
 
     if ! [ "$?" == "0" ];
     then
@@ -65,7 +68,7 @@ fi
 
 if [ "$PROOT_NAME" == "" ];
 then
-    PROOT_NAME="$PROOT_DISTRO"
+    PROOT_NAME=$PROOT_DISTRO
 fi
 
 if [ "$PROOT_USER" == "" ];
@@ -108,14 +111,14 @@ echo ""
 echo "Updating proot ..."
 echo ""
 
-proot_distro login ${PROOT_NAME} -- apt update && apt upgrade -y
+proot-distro login ${PROOT_NAME} -- apt update && apt upgrade -y
 
 
 echo ""
 echo "Installing SSH in proot for remote access ..."
 echo ""
 
-proot_distro login ${PROOT_NAME} -- apt install -y openssh-server
+proot-distro login ${PROOT_NAME} -- apt install -y openssh-server
 
 
 proot-distro login ${PROOT_NAME} -- \
@@ -134,23 +137,30 @@ if ! [ -d "$HOME/scripts" ];
 then
     mkdir -p "$HOME/scripts"
     echo "export PATH=\$PATH:\$HOME/scripts" >> "$HOME/.environment"
+
+    grep -q "\$HOME/.environment" "$HOME/.bashrc"
+
+    if ! [ "$?" == "0" ];
+    then
+        echo "source \$HOME/.environment" >> "$HOME/.bashrc"
+    fi
 fi
 
 
 if ! [ -f "$HOME/scripts/penter" ];
 then
-    cp "$HOME/termux-setup/proot/pexec_admin" "$HOME/scripts/"
-    cp "$HOME/termux-setup/proot/penter" "$HOME/scripts/"
-    cp "$HOME/termux-setup/proot/penter_admin" "$HOME/scripts/"
-    cp "$HOME/termux-setup/proot/pexec" "$HOME/scripts/"
-    cp "$HOME/termux-setup/proot/start_proot" "$HOME/scripts/"
-    cp "$HOME/termux-setup/proot/stop_proot" "$HOME/scripts/"
+    cp "$SCRIPT_PATH/scripts/pexec_admin" "$HOME/scripts/"
+    cp "$SCRIPT_PATH/scripts/penter" "$HOME/scripts/"
+    cp "$SCRIPT_PATH/scripts/penter_admin" "$HOME/scripts/"
+    cp "$SCRIPT_PATH/scripts/pexec" "$HOME/scripts/"
+    cp "$SCRIPT_PATH/scripts/start_proot" "$HOME/scripts/"
+    cp "$SCRIPT_PATH/scripts/stop_proot" "$HOME/scripts/"
 
     chmod -R 770 "$HOME/scripts"
 fi
 
 
-cp $HOME/termux-setup/proot/proot_scripts/* "$PROOT_PATH/usr/bin/"
+cp $SCRIPT_PATH/proot_scripts/* "$PROOT_PATH/usr/bin/"
 
 
 if ! [ -f "$HOME/.proot_env" ];
