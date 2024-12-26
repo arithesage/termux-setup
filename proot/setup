@@ -95,7 +95,7 @@ PROOT_INSTALL_OPTS=""
 
 if ! [ "$PROOT_NAME" == "$PROOT_DISTRO" ];
 then
-    PROOT_INSTALL_OPTS+= "--override-alias $PROOT_NAME "
+    PROOT_INSTALL_OPTS+="--override-alias $PROOT_NAME "
 fi
 
 PROOT_INSTALL_OPTS+="${PROOT_DISTRO} "
