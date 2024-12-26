@@ -21,6 +21,7 @@ function usage
     echo ""
     echo "Export these variables to configure it: "
     echo "- PROOT_DISTRO: Distro to be installed (Debian stable by default)."
+    echo "- PROOT_ARCH: The distro architecture (Host's one by default)."
     echo "- PROOT_NAME: The proot name. It is 'debian' by default."
     echo "- PROOT_USER: Adds this user after installation. Puser by default."
     echo ""
@@ -70,6 +71,11 @@ fi
 if [ "$PROOT_USER" == "" ];
 then
     PROOT_USER="puser"
+fi
+
+if ! [ "$PROOT_ARCH" == "" ];
+then
+    export DISTRO_ARCH=$PROOT_ARCH
 fi
 
 
