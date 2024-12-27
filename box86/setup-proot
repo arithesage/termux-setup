@@ -1,0 +1,80 @@
+#!/bin/bash
+
+function abort
+{
+    REASON=$1
+
+    if ! [ "$REASON" == "" ];
+    then
+        echo $REASON
+    fi
+
+    echo ""
+
+    exit 1
+}
+
+
+SCRIPT_PATH=$(realpath $(dirname $0))
+
+
+
+
+PROOT_SETUP_PATH=$(dirname $(dirname $SCRIPT_PATH))
+
+echo "Preparing to setup x86 proot (with Box86) ..."
+echo ""
+
+export PROOT_DISTRO="debian-oldstable"
+export PROOT_NAME="x86_box"
+
+"$PROOT_SETUP_PATH/setup" 
+
+
+if [ "$?" == "0" ];
+then
+    "$PROOT_SETUP_PATH/scripts/penter_admin" $PROOT_DISTRO \
+        "apt update"
+
+    "$PROOT_SETUP_PATH/scripts/penter_admin" $PROOT_DISTRO \
+        "apt upgrade -y"
+
+    "$PROOT_SETUP_PATH/scripts/penter_admin" $PROOT_DISTRO \
+        "apt install -y dialog gpg git sudo wget"
+
+    if ! [ "$?" == "0" ];
+    then
+        abort "${PROOT_DISTRO} setup: Some packages failed to install."
+    fi
+
+
+    "$PROOT_SETUP_PATH/scripts/penter_admin" $PROOT_DISTRO \
+        "git clone https://github.com/arithesage/box86-setup.git --depth 1"
+
+    if ! [ "$?" == "0" ];
+    then
+        abort "Couldn't download box86-setup in ${PROOT_DISTRO} proot."
+    fi
+
+
+    "\$HOME/box86-setup/installer"
+
+    if ! [ "$?" == "0" ];
+    then
+        abort "The Box86 installed failed."
+    fi
+
+
+    echo "All done."
+    echo ""
+fi
+
+
+
+
+
+
+
+
+
+
