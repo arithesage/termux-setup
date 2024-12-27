@@ -19,8 +19,17 @@ function abort
 function usage
 {
     echo "Usage: pexec <proot name> <usename> <command line>"
+    echo "       pexec <proot environment file> <username> <command line>"
+    echo "       pexec <proot environment file> <command line>"
+    echo ""
     echo "Executes the given command line in the given proot installation."
     echo "The command line is executed as the given username."
+    echo ""
+    echo "You can provide them in the options or pass the environment file that"
+    echo "'setup_proot' generates in $HOME."
+    echo ""
+    echo "If done this way, you can ommit the user name and the default of the"
+    echo "environment file will be used."
     echo ""
 }
 
@@ -34,11 +43,36 @@ fi
 
 
 
-PROOT=$1
-PROOT_USER=$2
-CMDLINE=${@:3}
+if [ -f "$1" ];
+then
+    USING_ENV_FILE="1"
 
-if [ "$PROOT" == "" ] || [ "$PROOT_USER" == "" ] || [ "$CMDLINE" == "" ];
+    grep -q "PROOT_NAME" "$1"
+
+    if [ "$?" == "0" ];
+    then
+        source "$1"
+    fi
+
+    if ! [ "$3" == "" ];
+    then
+        PROOT_USER=$2
+    fi
+
+else
+    PROOT_NAME=$1
+    PROOT_USER=$2
+fi
+
+if [ "$USING_ENV_FILE" == "1" ];
+then
+    CMDLINE=${@:2}
+else
+    CMDLINE=${@:3}
+fi
+
+
+if [ "$PROOT_NAME" == "" ] || [ "$PROOT_USER" == "" ] || [ "$CMDLINE" == "" ];
 then
     usage
     abort
@@ -51,5 +85,5 @@ then
 fi
 
 
-proot-distro login $PROOT --user $PROOT_USER $SD_BINDING --shared-tmp -- $CMDLINE
+proot-distro login $PROOT_NAME --user $PROOT_USER $SD_BINDING --shared-tmp -- $CMDLINE
 

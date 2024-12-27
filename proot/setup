@@ -193,6 +193,18 @@ then
 
     echo "export ${PROOT_NAME}_PROOT_PATH=\"${PROOT_PATH}\"" >> \
          "$HOME/.${PROOT_NAME}_proot_env"
+
+    echo "export \$PROOT_NAME=\"${PROOT_NAME}\"" >> \
+         "$HOME/.${PROOT_NAME}_proot_env"
+
+    echo "export \$PROOT_PATH=\"${PROOT_DISTRO}\"" >> \
+         "$HOME/.${PROOT_NAME}_proot_env"
+
+    echo "export \$PROOT_USER=\"${PROOT_USER}\"" >> \
+         "$HOME/.${PROOT_NAME}_proot_env"
+
+    echo "export \$PROOT_PATH=\"${PROOT_PATH}\"" >> \
+         "$HOME/.${PROOT_NAME}_proot_env"
 fi
 
 

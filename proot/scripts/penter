@@ -19,7 +19,11 @@ function abort
 function usage
 {
     echo "Usage: penter <proot name> <username>"
+    echo "       penter <proot environment file>"
+    echo ""
     echo "Enters into the given proot installation as the given username."
+    echo "You can provide them in the options or pass the environment file that"
+    echo "'setup_proot' generates in $HOME."
     echo ""
 }
 
@@ -33,11 +37,22 @@ fi
 
 
 
-PROOT=$1
-PROOT_USER=$2
+if [ -f "$1" ];
+then
+    grep -q "PROOT_NAME" "$1"
+
+    if [ "$?" == "0" ];
+    then
+        source "$1"
+    fi
+
+else
+    PROOT_NAME=$1
+    PROOT_USER=$2
+fi
 
 
-if [ "$PROOT" == "" ] || [ "$PROOT_USER" == "" ];
+if [ "$PROOT_NAME" == "" ] || [ "$PROOT_USER" == "" ];
 then
     usage
     abort
@@ -50,5 +65,5 @@ then
 fi
 
 
-proot-distro login $PROOT --user $PROOT_USER $SD_BINDING --shared-tmp
+proot-distro login $PROOT_NAME --user $PROOT_USER $SD_BINDING --shared-tmp
 
