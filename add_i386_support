@@ -20,7 +20,7 @@ SCRIPT_PATH=$(realpath $(dirname $0))
 
 
 
-PROOT_TOOLS_PATH=$(dirname $SCRIPT_PATH)/proot
+PROOT_TOOLS_PATH=$(realpath $(dirname $SCRIPT_PATH))/proot
 
 
 echo "Preparing to setup x86 proot (with Box86) ..."
