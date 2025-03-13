@@ -28,7 +28,7 @@ then
     echo "Box86 proot seems missing. Proceeding with its setup..."
     echo ""
 
-    "$SCRIPT_PATH/add_i386_support"
+    "$SCRIPT_PATH/install_box86_proot"
 
     if [ "$?" == "1" ];
     then

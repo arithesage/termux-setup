@@ -26,7 +26,7 @@ PROOT_TOOLS_PATH=$SCRIPT_PATH/proot
 echo "Preparing to setup x86 proot (with Box86) ..."
 echo ""
 
-export PROOT_DISTRO="debian-oldstable"
+export PROOT_DISTRO="debian"
 export PROOT_NAME="box86"
 
 
