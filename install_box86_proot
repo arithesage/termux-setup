@@ -95,7 +95,7 @@ then
 
 
     "$PROOT_TOOLS_PATH/scripts/pexec_admin" $PROOT_NAME \
-        "\$HOME/box86-setup/installer"
+        /root/box86-setup/installer
 
     if ! [ "$?" == "0" ];
     then

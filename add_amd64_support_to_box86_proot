@@ -65,7 +65,7 @@ fi
 
 
 "$PROOT_TOOLS_PATH/scripts/pexec_admin" box86 \
-    "git clone https://github.com/arithesage/box64-setup.git --depth 1"
+    git clone https://github.com/arithesage/box64-setup.git --depth 1
 
 if ! [ "$?" == "0" ];
 then
@@ -74,7 +74,7 @@ fi
 
 
 "$PROOT_TOOLS_PATH/scripts/pexec_admin" box86 \
-    "\$HOME/box64-setup/installer"
+    /root/box64-setup/installer
 
 
 if ! [ "$?" == "0" ];
