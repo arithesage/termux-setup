@@ -65,7 +65,7 @@ then
         echo "======================================================="
 
         pkg install -y qemu-user-arm qemu-user-i386 \
-                    qemu-user-aarch64 qemu-user-x86-64
+                       qemu-user-aarch64 qemu-user-x86-64
 
         if [ "$?" == "1" ];
         then
