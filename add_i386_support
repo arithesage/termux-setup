@@ -20,26 +20,27 @@ SCRIPT_PATH=$(realpath $(dirname $0))
 
 
 
-PROOT_SETUP_PATH=$(dirname $(dirname $SCRIPT_PATH))
+PROOT_TOOLS_PATH=$(dirname $SCRIPT_PATH)/proot
+
 
 echo "Preparing to setup x86 proot (with Box86) ..."
 echo ""
 
 export PROOT_DISTRO="debian-oldstable"
-export PROOT_NAME="x86_box"
+export PROOT_NAME="box86"
 
-"$PROOT_SETUP_PATH/setup" 
+"$PROOT_TOOLS_PATH/setup" 
 
 
 if [ "$?" == "0" ];
 then
-    "$PROOT_SETUP_PATH/scripts/penter_admin" $PROOT_DISTRO \
+    "$PROOT_TOOLS_PATH/scripts/pexec_admin" $PROOT_DISTRO \
         "apt update"
 
-    "$PROOT_SETUP_PATH/scripts/penter_admin" $PROOT_DISTRO \
+    "$PROOT_TOOLS_PATH/scripts/pexec_admin" $PROOT_DISTRO \
         "apt upgrade -y"
 
-    "$PROOT_SETUP_PATH/scripts/penter_admin" $PROOT_DISTRO \
+    "$PROOT_TOOLS_PATH/scripts/pexec_admin" $PROOT_DISTRO \
         "apt install -y dialog gpg git sudo wget"
 
     if ! [ "$?" == "0" ];
@@ -48,7 +49,7 @@ then
     fi
 
 
-    "$PROOT_SETUP_PATH/scripts/penter_admin" $PROOT_DISTRO \
+    "$PROOT_TOOLS_PATH/scripts/pexec_admin" $PROOT_DISTRO \
         "git clone https://github.com/arithesage/box86-setup.git --depth 1"
 
     if ! [ "$?" == "0" ];
@@ -57,11 +58,12 @@ then
     fi
 
 
-    "\$HOME/box86-setup/installer"
+    "$PROOT_TOOLS_PATH/scripts/pexec_admin" $PROOT_DISTRO \
+        "\$HOME/box86-setup/installer"
 
     if ! [ "$?" == "0" ];
     then
-        abort "The Box86 installed failed."
+        abort "Box86 installation failed."
     fi
 
 

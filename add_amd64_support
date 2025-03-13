@@ -1,0 +1,88 @@
+#!/bin/bash
+
+function abort
+{
+    REASON=$1
+
+    if ! [ "$REASON" == "" ];
+    then
+        echo $REASON
+    fi
+
+    echo ""
+
+    exit 1
+}
+
+
+SCRIPT_PATH=$(realpath $(dirname $0))
+
+
+
+
+PROOTS_PATH="$PREFIX/var/lib/proot-distro/installed-rootfs"
+
+
+if ! [ -d "$PROOTS_PATH/box86" ];
+then
+    echo "Box86 proot seems missing. Proceeding with its setup..."
+    echo ""
+
+    "$SCRIPT_PATH/add_i386_support"
+
+    if [ "$?" == "1" ];
+    then
+        echo "Box86 proot setup failed. Cleaning..."
+        proot-distro remove box86
+
+        abort
+    fi
+fi
+
+
+PROOT_TOOLS_PATH=$(dirname $SCRIPT_PATH)/proot
+
+
+echo "Preparing to add AMD64 support to the Box86 proot (with Box64) ..."
+echo ""
+
+source "$HOME/.box86_proot_env"
+
+if [ "$PROOT_box86" == "" ];
+then
+    echo "PROOT_box86 environment variable is empty."
+    echo "Something must wrong with Box86 proot."
+    
+    abort "Reinstall the i386 support."
+fi
+
+
+if ! [ -f "$box86_PROOT_PATH/usr/local/bin/box86" ];
+then
+    echo "Cannot find box86 executable in Box86 proot."
+    abort "Reinstall the i386 support."
+fi
+
+
+"$PROOT_TOOLS_PATH/scripts/pexec_admin" box86 \
+    "git clone https://github.com/arithesage/box64-setup.git --depth 1"
+
+if ! [ "$?" == "0" ];
+then
+    abort "Couldn't download box64-setup in ${PROOT_DISTRO} proot."
+fi
+
+
+"$PROOT_TOOLS_PATH/scripts/pexec_admin" box86 \
+    "\$HOME/box64-setup/installer"
+
+
+if ! [ "$?" == "0" ];
+then
+    abort "Box64 installation failed."
+fi
+
+
+echo "All done."
+echo ""
+
