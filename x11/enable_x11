@@ -13,12 +13,12 @@ then
     echo "Installing screen..."
     echo "--------------------"
 
-    pkg update
-    pkg install -y screen
+    sudo apt update
+    sudo apt install -y screen
 fi
 
 
-screen -dmS x11 "termux-x11 :0"
+screen -dmS x11 termux-x11 :0
 
 if [ "$?" == "0" ];
 then
