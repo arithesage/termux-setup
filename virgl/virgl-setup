@@ -5,7 +5,7 @@ function abort
 {
     REASON=$1
 
-    if [ "$REASON" == "" ];
+    if ! [ "$REASON" == "" ];
     then
         echo $REASON
     fi
@@ -17,6 +17,8 @@ function abort
 
 
 
+
+SCRIPT_DIR=$(realpath $(dirname $0))
 
 if ! [ -f "$PREFIX/bin/termux-x11" ];
 then
@@ -63,7 +65,7 @@ fi
 
 if ! [ -f "$HOME/.virgl_environment" ];
 then
-    cp "$HOME/termux-setup/virgl/.virgl_environment" "$HOME/"
+    cp "$SCRIPT_DIR/.virgl_environment" "$HOME/"
     echo "source \$HOME/.virgl_environment" >> $HOME/.bashrc
 fi
 
