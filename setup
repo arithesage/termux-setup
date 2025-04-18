@@ -1,0 +1,142 @@
+#!/bin/bash
+
+function abort
+{
+    REASON=$1
+
+    if ! [ "$REASON" == "" ];
+    then
+        echo $REASON
+    fi
+
+    echo ""
+
+    exit 1
+}
+
+
+
+
+TERMUX_SETUP_REPO="https://github.com/arithesage/termux-setup.git"
+
+
+echo "=================================="
+echo "Performing a basic Termux setup..."
+echo "=================================="
+
+if ! [ -f "$HOME/.bashrc" ];
+then
+    cp "$PREFIX/etc/bash.bashrc" "$HOME/.bashrc"
+fi
+
+if ! [ -f "$HOME/.environment" ];
+then
+    touch "$HOME/.environment"
+    echo "source \$HOME/.environment" >> "$HOME/.bashrc"
+fi
+
+
+echo ""
+echo "Checking available packages..."
+echo "------------------------------"
+
+pkg update
+
+echo ""
+
+
+NEEDED_PACKAGES=""
+
+
+if ! [ -f "$PREFIX/bin/git" ];
+then
+    NEEDED_PACKAGES+="git "
+fi
+
+
+if ! [ -f "$PREFIX/bin/sshd" ];
+then
+    NEEDED_PACKAGES+="openssh "
+fi
+
+
+if ! [ "$NEEDED_PACKAGES" == "" ];
+then
+    echo "Installing some needed packages..."
+    echo "----------------------------------"
+
+    pkg install -y $NEEDED_PACKAGES
+fi
+
+echo ""
+
+
+echo "$NEEDED_PACKAGES" | grep openssh > /dev/null
+
+if [ "$?" == "0" ];
+then
+    echo "sshd" >> "$HOME/.bashrc"
+
+    echo "Added sshd to startup."
+    echo "Please, enter a password for login."
+    echo ""
+
+    PASSWD_OK="1"
+
+    while ! [ "$PASSWD_OK" == "0" ];
+    do
+        passwd
+        PASSWD_OK=$?
+    done
+fi
+
+
+if ! [ -d "$HOME/termux-setup" ];
+then
+    echo ""
+    echo "Cloning 'termux-setup' repository..."
+    echo "------------------------------------"
+
+    git clone $TERMUX_SETUP_REPO "$HOME/termux-setup"
+
+
+    if ! [ "$?" == "0" ];
+    then
+        echo "#!/bin/bash" >> "$HOME/download_termux-setup"
+
+        echo "git clone $TERMUX_SETUP_REPO \$HOME/termux-setup" \
+        >> "$HOME/download_termux-setup"
+
+        echo "chmod -R +x \"\$HOME/termux-setup\"" \
+        >> "$HOME/download_termux-setup"
+
+        chmod +x "$HOME/download_termux-setup"
+
+        echo "Something went wrong cloning the repo."
+        echo "You can retry executing '~/download_termux-setup'."
+    fi
+fi
+
+
+if [ -d "$HOME/termux-setup" ];
+then
+    chmod -R 770 "$HOME/termux-setup"
+fi
+
+
+if [ -d "$HOME/storage/external-1" ];
+then
+    "$HOME/termux-setup/find_extsd"
+fi
+
+
+echo ""
+echo "Basic Termux setup done."
+echo "You can now setup more things using the scripts contained in the"
+echo "repository downloaded in ~/termux-setup' if you wish."
+echo ""
+echo "Restart Termux before continuing."
+echo ""
+
+
+
