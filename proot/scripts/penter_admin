@@ -18,8 +18,8 @@ function abort
 
 function usage
 {
-    echo "Usage: penter_admin <proot name> [cmdline]"
-    echo "       penter_admin <proot environment file> [cmdline]"
+    echo "Usage: penter_admin <proot name> [cmdline|server]"
+    echo "       penter_admin <proot environment file> [cmdline|server]"
     echo ""
     echo "Enters into the given proot installation as root."
     echo "If a command line is provided, it is executed instead entering."
@@ -27,6 +27,11 @@ function usage
     echo "You can provide the proot name by parameters,"
     echo "the PROOT_NAME environment variable, or passing "
     echo "the environment file that 'setup_proot' generates in $HOME."
+    echo ""
+    echo "If, instead of a command line, you provide the 'server' parameter, "
+    echo "the proot Will be started in server mode (with sshd listening)."
+    echo ""
+    echo "Run 'stop_proot' <proot name> to stop it."
     echo ""
 }
 
@@ -56,7 +61,14 @@ else
     PROOT_NAME=$1
 fi
 
-CMDLINE=$3
+
+if [ "$3" == "server" ];
+then
+    PROOT_SERVER=1
+else
+    CMDLINE=$3
+fi
+
 
 if [ "$PROOT_NAME" == "" ];
 then
@@ -84,7 +96,13 @@ if ! [ "$PROOT_NAME" == "" ];
 then
     if [ "$CMDLINE" == "" ];
     then
-        echo "Entering into '$PROOT_NAME' proot as admin..."
+        if [ "$PROOT_SERVER" == "1" ];
+        then
+            echo "Starting proot '$PROOT_NAME' in server mode."
+            echo "SSHD listening on port 8022."
+        else
+            echo "Entering into '$PROOT_NAME' proot as admin..."
+        fi
     else
         echo "Executing '$CMDLINE' in '$PROOT_NAME' proot as admin..."
     fi
@@ -105,5 +123,11 @@ then
 fi
 
 
-proot-distro login $PROOT_NAME $SD_BINDING --shared-tmp $CMDLINE
-
+if [ "$PROOT_SERVER" == "1" ];
+then
+    screen -dmS proot_${PROOT_NAME} proot-distro login ${PROOT_NAME} ${SD_BINDING} \
+                                        --shared-tmp --no-kill-on-exit \
+                                        -- /usr/sbin/sshd -p 8022
+else
+    proot-distro login $PROOT_NAME $SD_BINDING --shared-tmp $CMDLINE
+fi
