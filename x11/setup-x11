@@ -5,7 +5,7 @@ function abort
 {
     REASON=$1
 
-    if [ "$REASON" == "" ];
+    if ! [ "$REASON" == "" ];
     then
         echo $REASON
     fi
@@ -16,6 +16,9 @@ function abort
 }
 
 
+
+
+SCRIPT_DIR=$(realpath $(dirname $0))
 
 
 if [ -f "$PREFIX/bin/termux-x11" ];
@@ -54,12 +57,12 @@ then
 fi
 
 
-cp "$HOME/termux-setup/x11/enable_x11" "$HOME/scripts/"
+cp "$SCRIPT_PATH/enable_x11" "$HOME/scripts/"
 
 
 if ! [ -f "$HOME/.x11_environment" ];
 then
-    cp "$HOME/termux-setup/x11/.x11_environment" "$HOME/"
+    cp "$SCRIPT_PATH/.x11_environment" "$HOME/"
     echo "source \$HOME/.x11_environment" >> $HOME/.bashrc
 fi
 
