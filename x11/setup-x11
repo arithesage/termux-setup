@@ -57,12 +57,12 @@ then
 fi
 
 
-cp "$SCRIPT_PATH/enable_x11" "$HOME/scripts/"
+cp "$SCRIPT_DIR/enable_x11" "$HOME/scripts/"
 
 
 if ! [ -f "$HOME/.x11_environment" ];
 then
-    cp "$SCRIPT_PATH/.x11_environment" "$HOME/"
+    cp "$SCRIPT_DIR/.x11_environment" "$HOME/"
     echo "source \$HOME/.x11_environment" >> $HOME/.bashrc
 fi
 
