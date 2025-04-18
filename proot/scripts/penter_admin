@@ -101,7 +101,7 @@ fi
 
 if ! [ "$CMDLINE" == "" ];
 then
-    CMDLINE='-- $CMDLINE'
+    CMDLINE="-- $CMDLINE"
 fi
 
 
