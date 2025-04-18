@@ -39,35 +39,36 @@ fi
 
 
 
-PROOT=$1
+PROOT_NAME=$1
 
-if [ "$PROOT" == "" ];
+if [ "$PROOT_NAME" == "" ];
 then
     usage
     abort
 fi
 
 
-PROOT_PATH="${PREFIX}/var/lib/proot-distro/installed-rootfs/${PROOT}"
+PROOT_PATH="${PREFIX}/var/lib/proot-distro/installed-rootfs/${PROOT_NAME}"
 
 
 if ! [ -d "$PROOT_PATH" ];
 then
-    abort "The proot '$PROOT' does not exist."
+    abort "The proot '$PROOT_NAME' does not exist."
 fi
 
 
-is_proot_running $PROOT
+is_proot_running $PROOT_NAME
 
 if ! [ "$?" == "0" ];
 then
-    abort "The proot '${PROOT}' is already off."
+    abort "The proot '${PROOT_NAME}' is already off."
 fi
 
 
-echo "Trying to stop proot ..."
+echo "Trying to stop proot '$PROOT_NAME'..."
+echo ""
 
-pexec_admin $PROOT stop_sshd
+penter_admin $PROOT_NAME stop_sshd
 
 if ! [ "$?" == "0" ];
 then
@@ -75,7 +76,7 @@ then
 fi
 
 
-echo "Proot '${PROOT}' should be closed now."
+echo "Proot '${PROOT_NAME}' should be closed now."
 echo ""
 
 
