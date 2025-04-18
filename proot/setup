@@ -164,10 +164,8 @@ fi
 
 if ! [ -f "$HOME/scripts/penter" ];
 then
-    cp "$SCRIPT_PATH/scripts/pexec_admin" "$HOME/scripts/"
     cp "$SCRIPT_PATH/scripts/penter" "$HOME/scripts/"
     cp "$SCRIPT_PATH/scripts/penter_admin" "$HOME/scripts/"
-    cp "$SCRIPT_PATH/scripts/pexec" "$HOME/scripts/"
     cp "$SCRIPT_PATH/scripts/start_proot" "$HOME/scripts/"
     cp "$SCRIPT_PATH/scripts/stop_proot" "$HOME/scripts/"
 
@@ -224,15 +222,11 @@ echo "to get them added everytime you login."
 echo ""
 echo "Also, the following scripts have been added to ~\scripts and your PATH:"
 echo ""
-echo "- pexec_admin:    Executes a command line in the proot as root."
-echo "                  This is the recommended way to install software"
-echo "                  rather than using sudo."
-echo ""
-echo "                  Remember your home dir will be /root"
-echo ""
-echo "- pexec:          Executes a command line as ${PROOT_USER}."
 echo "- penter:         Enter the proot environment as ${PROOT_USER}."
 echo "- penter_admin:   Enter the proot environment as root."
+echo ""
+echo "Both scripts also allows executing a command line without entering into"
+echo "the proot."
 echo ""
 
 

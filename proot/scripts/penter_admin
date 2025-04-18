@@ -18,12 +18,15 @@ function abort
 
 function usage
 {
-    echo "Usage: penter_admin <proot name>"
-    echo "       penter_admin <proot environment file>"
+    echo "Usage: penter_admin <proot name> [cmdline]"
+    echo "       penter_admin <proot environment file> [cmdline]"
     echo ""
     echo "Enters into the given proot installation as root."
-    echo "You can provide them in the options or pass the environment file that"
-    echo "'setup_proot' generates in $HOME."
+    echo "If a command line is provided, it is executed instead entering."
+    echo ""
+    echo "You can provide the proot name by parameters,"
+    echo "the PROOT_NAME environment variable, or passing "
+    echo "the environment file that 'setup_proot' generates in $HOME."
     echo ""
 }
 
@@ -44,25 +47,63 @@ then
     if [ "$?" == "0" ];
     then
         source "$1"
+
+        echo "Loaded proot $PROOT_NAME environment."
+        echo ""
     fi
 
 else
     PROOT_NAME=$1
 fi
 
+CMDLINE=$3
 
-if [ "$PROOT_NAME" == "" ]
+if [ "$PROOT_NAME" == "" ];
 then
+    echo "Can't login into a proot without knowing the PROOT_NAME."
+    echo ""
+
     usage
     abort
 fi
 
 
-if ! [ "$EXT_SD" == "" ];
+if [ "$EXT_SD" == "" ];
 then
+    if [ -f "$HOME/.extsd_id" ];
+    then
+        SD_BINDING="--bind /storage/$(cat $HOME/.extsd_id):/mnt/extsd"
+    fi
+
+else
     SD_BINDING="--bind $EXT_SD:/mnt/extsd"
 fi
 
 
-proot-distro login $PROOT_NAME $SD_BINDING --shared-tmp
+if ! [ "$PROOT_NAME" == "" ];
+then
+    if [ "$CMDLINE" == "" ];
+    then
+        echo "Entering into '$PROOT_NAME' proot as admin..."
+    else
+        echo "Executing '$CMDLINE' in '$PROOT_NAME' proot as admin..."
+    fi
+
+    if ! [ "$SD_BINDING" == "" ];
+    then
+        echo "(The external SD card will be mounted at /mnt/extsd)"
+    fi
+
+    echo "========================================================"
+    echo ""
+fi
+
+
+if ! [ "$CMDLINE" == "" ];
+then
+    CMDLINE='-- $CMDLINE'
+fi
+
+
+proot-distro login $PROOT_NAME $SD_BINDING --shared-tmp $CMDLINE
 

@@ -18,12 +18,15 @@ function abort
 
 function usage
 {
-    echo "Usage: penter <proot name> <username>"
-    echo "       penter <proot environment file>"
+    echo "Usage: penter <proot name> <username> [cmdline]"
+    echo "       penter <proot environment file> [cmdline]"
     echo ""
     echo "Enters into the given proot installation as the given username."
-    echo "You can provide them in the options or pass the environment file that"
-    echo "'setup_proot' generates in $HOME."
+    echo "If a command line is provided, it is executed instead entering."
+    echo ""
+    echo "You can provide the proot name and the user name by parameters, "
+    echo "the PROOT_NAME and PROOT_USER environment variables or passing "
+    echo "the environment file that 'setup_proot' generates in $HOME."
     echo ""
 }
 
@@ -44,6 +47,9 @@ then
     if [ "$?" == "0" ];
     then
         source "$1"
+
+        echo "Loaded proot $PROOT_NAME environment."
+        echo ""
     fi
 
 else
@@ -51,19 +57,57 @@ else
     PROOT_USER=$2
 fi
 
+CMDLINE=$3
+
 
 if [ "$PROOT_NAME" == "" ] || [ "$PROOT_USER" == "" ];
 then
+    echo "Can't login into a proot without knowing the PROOT_NAME"
+    echo "and the PROOT_USER to use."
+    echo ""
+
     usage
     abort
 fi
 
 
-if ! [ "$EXT_SD" == "" ];
+if [ "$EXT_SD" == "" ];
 then
+    if [ -f "$HOME/.extsd_id" ];
+    then
+        SD_BINDING="--bind /storage/$(cat $HOME/.extsd_id):/mnt/extsd"
+    fi
+
+else
     SD_BINDING="--bind $EXT_SD:/mnt/extsd"
 fi
 
 
-proot-distro login $PROOT_NAME --user $PROOT_USER $SD_BINDING --shared-tmp
+if ! [ "$PROOT_NAME" == "" ] && ! [ "$PROOT_USER" == "" ];
+then
+    if [ "$CMDLINE" == "" ];
+    then
+        echo "Entering into '$PROOT_NAME' proot as '$PROOT_USER'..."
+
+    else
+        echo "Executing '$CMDLINE' in '$PROOT_NAME' proot as '$PROOT_USER'..."
+    fi
+
+    if ! [ "$SD_BINDING" == "" ];
+    then
+        echo "(The external SD card will be mounted at /mnt/extsd)"
+    fi
+
+    echo "========================================================"
+    echo ""
+fi
+
+
+if ! [ "$CMDLINE" == "" ];
+then
+    CMDLINE='-- $CMDLINE'
+fi
+
+
+proot-distro login $PROOT_NAME --user $PROOT_USER $SD_BINDING --shared-tmp $CMDLINE
 
