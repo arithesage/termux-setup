@@ -18,7 +18,7 @@ function abort
 
 function usage
 {
-    echo "Usage: penter <proot name> <username> [cmdline]"
+    echo "Usage: penter <proot name> [username] [cmdline]"
     echo "       penter <proot environment file> [cmdline]"
     echo ""
     echo "Enters into the given proot installation as the given username."
@@ -27,6 +27,8 @@ function usage
     echo "You can provide the proot name and the user name by parameters, "
     echo "the PROOT_NAME and PROOT_USER environment variables or passing "
     echo "the environment file that 'setup_proot' generates in $HOME."
+    echo ""
+    echo "If no user is provided, 'puser' is used by default."
     echo ""
 }
 
@@ -48,13 +50,18 @@ then
     then
         source "$1"
 
-        echo "Loaded proot $PROOT_NAME environment."
+        echo "Loaded proot '$PROOT_NAME' environment."
         echo ""
     fi
 
 else
     PROOT_NAME=$1
     PROOT_USER=$2
+
+    if [ "$PROOT_USER" == "" ];
+    then
+        PROOT_USER="puser"
+    fi
 fi
 
 CMDLINE=$3
@@ -105,7 +112,7 @@ fi
 
 if ! [ "$CMDLINE" == "" ];
 then
-    CMDLINE='-- $CMDLINE'
+    CMDLINE="-- $CMDLINE"
 fi
 
 
