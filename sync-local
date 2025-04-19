@@ -1,0 +1,15 @@
+#!/bin/bash
+
+SCRIPTS="$HOME/scripts"
+SCRIPT_DIR=$(realpath $(dirname $0))
+
+
+if ! [ -d "$SCRIPTS" ];
+then
+    mkdir -p "$SCRIPTS"
+fi
+
+cp $SCRIPT_DIR/proot/scripts/* $SCRIPTS/
+
+echo "Scripts synced."
+echo ""
