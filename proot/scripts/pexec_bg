@@ -1,0 +1,31 @@
+#!/bin/bash
+
+if [ "$EXT_SD" == "" ];
+then
+    SD_BINDING="--bind /storage/$EXT_SD:/mnt/extsd"
+else
+    if [ -f "$HOME/.extsd_id" ];
+    then
+        SD_PATH="/storage/$(cat $HOME/.extsd_id)"
+        SD_BINDING="--bind $SD_PATH:/mnt/extsd"
+    fi
+fi
+
+
+if ! [ "$PROOT_NAME" == "" ] && 
+   ! [ "$PROOT_USER" == "" ] &&
+   ! [ "$CMDLINE" == "" ] &&
+then
+    PROOT_CMDLINE="proot-distro login $PROOT_NAME"
+    PROOT_CMDLINE+=" --user $PROOT_USER"
+    PROOT_CMDLINE+=" ${SD_BINDING}"
+    PROOT_CMDLINE+=" --shared-tmp"
+    PROOT_CMDLINE+=" --no-kill-on-exit"
+    PROOT_CMDLINE+=" -- $CMDLINE"
+
+    echo "Running '$CMDLINE' at '$PROOT_NAME'"
+    echo "as $PROOT_USER in background."
+    echo ""
+
+    screen -dmS proot_${PROOT_NAME} $PROOT_CMDLINE
+fi
