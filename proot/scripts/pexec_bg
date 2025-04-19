@@ -1,5 +1,10 @@
 #!/bin/bash
 
+PROOT_NAME=$1
+PROOT_USER=$2
+CMDLINE=$3
+
+
 if [ "$EXT_SD" == "" ];
 then
     SD_BINDING="--bind /storage/$EXT_SD:/mnt/extsd"
