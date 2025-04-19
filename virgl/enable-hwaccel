@@ -1,0 +1,12 @@
+#!/bin/bash
+
+if ! [ "$GALLIUM_DRIVER" == "" ];
+then
+    virgl_test_server --use-egl-surfaceless --use-gles &
+
+    if [ "$?" == "0" ];
+    then
+        echo "3D hardware acceleration enabled."
+        echo ""
+    fi
+fi
