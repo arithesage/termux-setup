@@ -14,7 +14,7 @@ fi
 
 if ! [ "$PROOT_NAME" == "" ] && 
    ! [ "$PROOT_USER" == "" ] &&
-   ! [ "$CMDLINE" == "" ] &&
+   ! [ "$CMDLINE" == "" ];
 then
     PROOT_CMDLINE="proot-distro login $PROOT_NAME"
     PROOT_CMDLINE+=" --user $PROOT_USER"
