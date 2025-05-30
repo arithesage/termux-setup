@@ -130,10 +130,26 @@ then
 fi
 
 
+grep -q "PROOTS" "$HOME/.environment"
+
+if ! [ "$?" == "0" ];
+then
+    PROOTS=$PREFIX
+    PROOTS+=/var/lib/proot-distro
+    PROOTS+=/installed-rootfs
+
+    echo "export PROOTS=\$PROOTS" >> "$HOME/.environment"
+fi
+
+
 echo ""
 echo "Basic Termux setup done."
 echo "You can now setup more things using the scripts contained in the"
 echo "repository downloaded in ~/termux-setup' if you wish."
+echo ""
+echo "The PROOTS environment variable has been added."
+echo "It contains the path to allí you installed"
+echo "proots in case yo install any."
 echo ""
 echo "Restart Termux before continuing."
 echo ""
